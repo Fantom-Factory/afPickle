@@ -1,7 +1,9 @@
+using afPickle
 
-class TestStuff : Test {
+@Js class TestStuff : Test {
 	
 	Void testStuff() {
-		verifyEq(2 + 2, 5)
+		str := Pickle.writeObj("Str")
+		echo(str.toStr)
 	}
 }
