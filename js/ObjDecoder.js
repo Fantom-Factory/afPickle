@@ -32,10 +32,10 @@ afPickle_ObjDecoder.prototype.readHeader = function() {
 }
 
 /**
- * using		 := usingPod | usingType | usingAs
- * usingPod	:= "using" podName
- * usingType := "using" podName::typeName
- * usingAs	 := "using" podName::typeName "as" name
+ * using		:= usingPod | usingType | usingAs
+ * usingPod		:= "using" podName
+ * usingType	:= "using" podName::typeName
+ * usingAs		:= "using" podName::typeName "as" name
  */
 afPickle_ObjDecoder.prototype.readUsing = function() {
 	var line = this.tokenizer.line;
@@ -492,7 +492,10 @@ afPickle_ObjDecoder.prototype.readType = function(lbracket) {
 	}
 	if (this.curt == afPickle_Token.COLON) {
 		this.consume();
-		t = new fan.sys.MapType(t, this.readType());
+		var lbracket2 = this.curt == afPickle_Token.LBRACKET;
+		if (lbracket2) this.consume();
+		t = new fan.sys.MapType(t, this.readType(lbracket2));
+		if (lbracket2) this.consume(afPickle_Token.RBRACKET, "Expected closing ]");
 	}
 	while (this.curt == afPickle_Token.LRBRACKET) {
 		this.consume();
