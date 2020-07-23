@@ -8,7 +8,7 @@ fan.afPickle.PicklePeer.prototype.$typeof = function() {
 
 fan.afPickle.PicklePeer.readObj = function(input, options) {
 	if (options === undefined) options = null;
-	return new fanx_ObjDecoder(input, options).readObj();
+	return new afPickle_ObjDecoder(input, options).readObj();
 }
 
 fan.afPickle.PicklePeer.writeObj = function(obj, options) {

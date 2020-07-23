@@ -3,7 +3,7 @@
  * Tokenizer inputs a stream of Unicode characters and
  * outputs tokens for the Fantom serialization grammar.
  */
-function fanx_Tokenizer(input)
+function afPickle_Tokenizer(input)
 {
   this.input = null;   // input stream
   this.type  = null;   // current Token type constant
@@ -30,7 +30,7 @@ function fanx_Tokenizer(input)
  * of the current token is available in 'line' field.
  * Return the 'type' field or -1 if at end of stream.
  */
-fanx_Tokenizer.prototype.next = function()
+afPickle_Tokenizer.prototype.next = function()
 {
   if (this.$undo != null) { this.$undo.reset(this); this.$undo = null; return this.type; }
   this.val = null;
@@ -41,19 +41,19 @@ fanx_Tokenizer.prototype.next = function()
  * Read the next token, set the 'val' field but return
  * type without worrying setting the 'type' field.
  */
-fanx_Tokenizer.prototype.doNext = function()
+afPickle_Tokenizer.prototype.doNext = function()
 {
   while (true)
   {
     // skip whitespace
-    while (this.curt == fanx_Tokenizer.SPACE) this.consume();
-    if (this.cur < 0) return fanx_Token.EOF;
+    while (this.curt == afPickle_Tokenizer.SPACE) this.consume();
+    if (this.cur < 0) return afPickle_Token.EOF;
 
     // alpha means identifier
-    if (this.curt == fanx_Tokenizer.ALPHA) return this.id();
+    if (this.curt == afPickle_Tokenizer.ALPHA) return this.id();
 
     // number
-    if (this.curt == fanx_Tokenizer.DIGIT) return this.number(false);
+    if (this.curt == afPickle_Tokenizer.DIGIT) return this.number(false);
 
     // symbol
     switch (this.cur)
@@ -63,30 +63,30 @@ fanx_Tokenizer.prototype.doNext = function()
       case /* '"' */ 34:  return this.str();
       case /* '\''*/ 39:  return this.ch();
       case /* '`' */ 96:  return this.uri();
-      case /* '(' */ 40:  this.consume(); return fanx_Token.LPAREN;
-      case /* ')' */ 41:  this.consume(); return fanx_Token.RPAREN;
-      case /* ',' */ 44:  this.consume(); return fanx_Token.COMMA;
-      case /* ';' */ 59:  this.consume(); return fanx_Token.SEMICOLON;
-      case /* '=' */ 61:  this.consume(); return fanx_Token.EQ;
-      case /* '{' */ 123: this.consume(); return fanx_Token.LBRACE;
-      case /* '}' */ 125: this.consume(); return fanx_Token.RBRACE;
-      case /* '#' */ 35:  this.consume(); return fanx_Token.POUND;
-      case /* '?' */ 63:  this.consume(); return fanx_Token.QUESTION;
+      case /* '(' */ 40:  this.consume(); return afPickle_Token.LPAREN;
+      case /* ')' */ 41:  this.consume(); return afPickle_Token.RPAREN;
+      case /* ',' */ 44:  this.consume(); return afPickle_Token.COMMA;
+      case /* ';' */ 59:  this.consume(); return afPickle_Token.SEMICOLON;
+      case /* '=' */ 61:  this.consume(); return afPickle_Token.EQ;
+      case /* '{' */ 123: this.consume(); return afPickle_Token.LBRACE;
+      case /* '}' */ 125: this.consume(); return afPickle_Token.RBRACE;
+      case /* '#' */ 35:  this.consume(); return afPickle_Token.POUND;
+      case /* '?' */ 63:  this.consume(); return afPickle_Token.QUESTION;
       case /* '.' */ 46:
-        if (this.peekt == fanx_Tokenizer.DIGIT) return this.number(false);
+        if (this.peekt == afPickle_Tokenizer.DIGIT) return this.number(false);
         this.consume();
-        return fanx_Token.DOT;
+        return afPickle_Token.DOT;
       case /* '[' */ 91:
         this.consume();
-        if (this.cur == 93 /*']'*/) { this.consume(); return fanx_Token.LRBRACKET; }
-        return fanx_Token.LBRACKET;
+        if (this.cur == 93 /*']'*/) { this.consume(); return afPickle_Token.LRBRACKET; }
+        return afPickle_Token.LBRACKET;
       case /* ']' */ 93:
         this.consume();
-        return fanx_Token.RBRACKET;
+        return afPickle_Token.RBRACKET;
       case /* ':' */ 58:
         this.consume();
-        if (this.cur == 58 /*':'*/) { this.consume(); return fanx_Token.DOUBLE_COLON; }
-        return fanx_Token.COLON;
+        if (this.cur == 58 /*':'*/) { this.consume(); return afPickle_Token.DOUBLE_COLON; }
+        return afPickle_Token.COLON;
       case /* '*' */ 42:
         if (this.peek == 42 /*'*'*/) { this.skipCommentSL(); continue; }
         break;
@@ -108,11 +108,11 @@ fanx_Tokenizer.prototype.doNext = function()
 /**
  * Parse an identifier: alpha (alpha|number)*
  */
-fanx_Tokenizer.prototype.id = function()
+afPickle_Tokenizer.prototype.id = function()
 {
   var val = "";
   var first = this.cur;
-  while ((this.curt == fanx_Tokenizer.ALPHA || this.curt == fanx_Tokenizer.DIGIT) && this.cur > 0)
+  while ((this.curt == afPickle_Tokenizer.ALPHA || this.curt == afPickle_Tokenizer.DIGIT) && this.cur > 0)
   {
     val += String.fromCharCode(this.cur);
     this.consume();
@@ -122,24 +122,24 @@ fanx_Tokenizer.prototype.id = function()
   switch (first)
   {
     case /*'a'*/ 97:
-      if (val == "as") { return fanx_Token.AS; }
+      if (val == "as") { return afPickle_Token.AS; }
       break;
     case /*'f'*/ 102:
-      if (val == "false") { this.val = false; return fanx_Token.BOOL_LITERAL; }
+      if (val == "false") { this.val = false; return afPickle_Token.BOOL_LITERAL; }
       break;
     case /*'n'*/ 110:
-      if (val == "null") { this.val = null; return fanx_Token.NULL_LITERAL; }
+      if (val == "null") { this.val = null; return afPickle_Token.NULL_LITERAL; }
       break;
     case /*'t'*/ 116:
-      if (val == "true") { this.val = true; return fanx_Token.BOOL_LITERAL; }
+      if (val == "true") { this.val = true; return afPickle_Token.BOOL_LITERAL; }
       break;
     case /*'u'*/ 117:
-      if (val == "using") { return fanx_Token.USING; }
+      if (val == "using") { return afPickle_Token.USING; }
       break;
   }
 
   this.val = val;
-  return fanx_Token.ID;
+  return afPickle_Token.ID;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -147,9 +147,9 @@ fanx_Tokenizer.prototype.id = function()
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * Parse a number literal fanx_Token.
+ * Parse a number literal afPickle_Token.
  */
-fanx_Tokenizer.prototype.number = function(neg)
+afPickle_Tokenizer.prototype.number = function(neg)
 {
   // check for hex value
   if (this.cur == 48/*'0'*/ && this.peek == 120/*'x'*/)
@@ -159,7 +159,7 @@ fanx_Tokenizer.prototype.number = function(neg)
   var s = null;
   var whole = 0;
   var wholeCount = 0;
-  while (this.curt == fanx_Tokenizer.DIGIT)
+  while (this.curt == afPickle_Tokenizer.DIGIT)
   {
     if (s != null)
     {
@@ -177,13 +177,13 @@ fanx_Tokenizer.prototype.number = function(neg)
 
   // fraction part
   var floating = false;
-  if (this.cur == 46/*'.'*/ && this.peekt == fanx_Tokenizer.DIGIT)
+  if (this.cur == 46/*'.'*/ && this.peekt == afPickle_Tokenizer.DIGIT)
   {
     floating = true;
     if (s == null) { s = (neg) ? "-" : ""; s += whole; }
     s += '.';
     this.consume();
-    while (this.curt == fanx_Tokenizer.DIGIT)
+    while (this.curt == afPickle_Tokenizer.DIGIT)
     {
       s += String.fromCharCode(this.cur);
       this.consume();
@@ -199,8 +199,8 @@ fanx_Tokenizer.prototype.number = function(neg)
     s += 'e';
     this.consume();
     if (this.cur == 45/*'-'*/ || this.cur == 43/*'+'*/) { s += String.fromCharCode(this.cur); this.consume(); }
-    if (this.curt != fanx_Tokenizer.DIGIT) throw this.err("Expected exponent digits");
-    while (this.curt == fanx_Tokenizer.DIGIT)
+    if (this.curt != afPickle_Tokenizer.DIGIT) throw this.err("Expected exponent digits");
+    while (this.curt == afPickle_Tokenizer.DIGIT)
     {
       s += String.fromCharCode(this.cur);
       this.consume();
@@ -243,7 +243,7 @@ fanx_Tokenizer.prototype.number = function(neg)
         this.val = fan.sys.Float.make(whole);
       else
         this.val = fan.sys.Float.fromStr(s);
-      return fanx_Token.FLOAT_LITERAL;
+      return afPickle_Token.FLOAT_LITERAL;
     }
 
     // decimal literal (or duration)
@@ -253,12 +253,12 @@ fanx_Tokenizer.prototype.number = function(neg)
       if (dur > 0)
       {
         this.val = fan.sys.Duration.make(num * dur);
-        return fanx_Token.DURATION_LITERAL;
+        return afPickle_Token.DURATION_LITERAL;
       }
       else
       {
         this.val = fan.sys.Decimal.make(num);
-        return fanx_Token.DECIMAL_LITERAL;
+        return afPickle_Token.DECIMAL_LITERAL;
       }
     }
 
@@ -267,12 +267,12 @@ fanx_Tokenizer.prototype.number = function(neg)
     if (dur > 0)
     {
       this.val = fan.sys.Duration.make(num*dur);
-      return fanx_Token.DURATION_LITERAL;
+      return afPickle_Token.DURATION_LITERAL;
     }
     else
     {
       this.val = num;
-      return fanx_Token.INT_LITERAL;
+      return afPickle_Token.INT_LITERAL;
     }
   }
   catch (e)
@@ -284,13 +284,13 @@ fanx_Tokenizer.prototype.number = function(neg)
 /**
  * Process hex int/long literal starting with 0x
  */
-fanx_Tokenizer.prototype.hex = function()
+afPickle_Tokenizer.prototype.hex = function()
 {
   this.consume(); // 0
   this.consume(); // x
 
   // read first hex
-  var type = fanx_Token.INT_LITERAL;
+  var type = afPickle_Token.INT_LITERAL;
   var val = this.$hex(this.cur);
   if (val < 0) throw this.err("Expecting hex number");
 var str = String.fromCharCode(this.cur);
@@ -315,7 +315,7 @@ this.val = fan.sys.Int.fromStr(str, 16);
   return type;
 }
 
-fanx_Tokenizer.prototype.$hex = function(c)
+afPickle_Tokenizer.prototype.$hex = function(c)
 {
   if (48 <= c && c <= 57) return c - 48;
   if (97 <= c && c <= 102) return c - 97 + 10;
@@ -328,9 +328,9 @@ fanx_Tokenizer.prototype.$hex = function(c)
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * Parse a string literal fanx_Token.
+ * Parse a string literal afPickle_Token.
  */
-fanx_Tokenizer.prototype.str = function()
+afPickle_Tokenizer.prototype.str = function()
 {
   this.consume();  // opening quote
   var s = "";
@@ -348,7 +348,7 @@ fanx_Tokenizer.prototype.str = function()
     }
   }
   this.val = s;
-  return fanx_Token.STR_LITERAL;
+  return afPickle_Token.STR_LITERAL;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -358,7 +358,7 @@ fanx_Tokenizer.prototype.str = function()
 /**
  * Parse a char literal token (as Int literal).
  */
-fanx_Tokenizer.prototype.ch = function()
+afPickle_Tokenizer.prototype.ch = function()
 {
   // consume opening quote
   this.consume();
@@ -380,13 +380,13 @@ fanx_Tokenizer.prototype.ch = function()
   this.consume();
 
   this.val = c;
-  return fanx_Token.INT_LITERAL;
+  return afPickle_Token.INT_LITERAL;
 }
 
 /**
  * Parse an escapse sequence which starts with a \
  */
-fanx_Tokenizer.prototype.escape = function()
+afPickle_Tokenizer.prototype.escape = function()
 {
   // consume slash
   if (this.cur != 92/*'\\'*/) throw this.err("Internal error");
@@ -427,9 +427,9 @@ fanx_Tokenizer.prototype.escape = function()
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * Parse a uri literal fanx_Token.
+ * Parse a uri literal afPickle_Token.
  */
-fanx_Tokenizer.prototype.uri = function()
+afPickle_Tokenizer.prototype.uri = function()
 {
   // consume opening tick
   this.consume();
@@ -454,7 +454,7 @@ fanx_Tokenizer.prototype.uri = function()
   }
 
   this.val = fan.sys.Uri.fromStr(s);
-  return fanx_Token.URI_LITERAL;
+  return afPickle_Token.URI_LITERAL;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -464,7 +464,7 @@ fanx_Tokenizer.prototype.uri = function()
 /**
  * Skip a single line // comment
  */
-fanx_Tokenizer.prototype.skipCommentSL = function()
+afPickle_Tokenizer.prototype.skipCommentSL = function()
 {
   this.consume(); // first slash
   this.consume(); // next slash
@@ -481,7 +481,7 @@ fanx_Tokenizer.prototype.skipCommentSL = function()
  * Skip a multi line /* comment.  Note unlike C/Java,
  * slash/star comments can be nested.
  */
-fanx_Tokenizer.prototype.skipCommentML = function()
+afPickle_Tokenizer.prototype.skipCommentML = function()
 {
   this.consume(); // first slash
   this.consume(); // next slash
@@ -503,9 +503,9 @@ fanx_Tokenizer.prototype.skipCommentML = function()
 /**
  * Return a IOErr for current location in source.
  */
-fanx_Tokenizer.prototype.err = function(msg)
+afPickle_Tokenizer.prototype.err = function(msg)
 {
-  return fanx_ObjDecoder.err(msg, this.line);
+  return afPickle_ObjDecoder.err(msg, this.line);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -518,7 +518,7 @@ fanx_Tokenizer.prototype.err = function(msg)
  *  - updates the line and col count
  *  - end of file, sets fields to 0
  */
-fanx_Tokenizer.prototype.consume = function()
+afPickle_Tokenizer.prototype.consume = function()
 {
   // check for newline
   if (this.cur == 10/*'\n'*/ || this.cur == 13/*'\r'*/) this.line++;
@@ -533,7 +533,7 @@ fanx_Tokenizer.prototype.consume = function()
   this.cur   = this.peek;
   this.curt  = this.peekt;
   this.peek  = c;
-  this.peekt = 0 < c && c < 128 ? fanx_Tokenizer.charMap[c] : fanx_Tokenizer.ALPHA;
+  this.peekt = 0 < c && c < 128 ? afPickle_Tokenizer.charMap[c] : afPickle_Tokenizer.ALPHA;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -543,16 +543,16 @@ fanx_Tokenizer.prototype.consume = function()
 /**
  * Pushback a token which will be the next read.
  */
-fanx_Tokenizer.prototype.undo = function(type, val, line)
+afPickle_Tokenizer.prototype.undo = function(type, val, line)
 {
   if (this.$undo != null) throw new fan.sys.Err.make("only one pushback supported");
-  this.$undo = new fanx_Undo(type, val, line);
+  this.$undo = new afPickle_Undo(type, val, line);
 }
 
 /**
  * Reset the current token state.
  */
-fanx_Tokenizer.prototype.reset = function(type, val, line)
+afPickle_Tokenizer.prototype.reset = function(type, val, line)
 {
   this.type = type;
   this.val  = val;
@@ -564,29 +564,29 @@ fanx_Tokenizer.prototype.reset = function(type, val, line)
 // Char Map
 //////////////////////////////////////////////////////////////////////////
 
-fanx_Tokenizer.charMap = [];
-fanx_Tokenizer.SPACE = 1;
-fanx_Tokenizer.ALPHA = 2;
-fanx_Tokenizer.DIGIT = 3;
+afPickle_Tokenizer.charMap = [];
+afPickle_Tokenizer.SPACE = 1;
+afPickle_Tokenizer.ALPHA = 2;
+afPickle_Tokenizer.DIGIT = 3;
 
 // space characters; note \r is error in symbol()
-fanx_Tokenizer.charMap[32 /*' '*/]  = fanx_Tokenizer.SPACE;
-fanx_Tokenizer.charMap[10 /*'\n'*/] = fanx_Tokenizer.SPACE;
-fanx_Tokenizer.charMap[13 /*'\r'*/] = fanx_Tokenizer.SPACE;
-fanx_Tokenizer.charMap[9  /*'\t'*/] = fanx_Tokenizer.SPACE;
+afPickle_Tokenizer.charMap[32 /*' '*/]  = afPickle_Tokenizer.SPACE;
+afPickle_Tokenizer.charMap[10 /*'\n'*/] = afPickle_Tokenizer.SPACE;
+afPickle_Tokenizer.charMap[13 /*'\r'*/] = afPickle_Tokenizer.SPACE;
+afPickle_Tokenizer.charMap[9  /*'\t'*/] = afPickle_Tokenizer.SPACE;
 
 // alpha characters
-for (var i=97/*'a'*/; i<=122/*'z'*/; ++i) fanx_Tokenizer.charMap[i] = fanx_Tokenizer.ALPHA;
-for (var i=65/*'A'*/; i<=90/*'Z'*/;  ++i) fanx_Tokenizer.charMap[i] = fanx_Tokenizer.ALPHA;
-fanx_Tokenizer.charMap[95 /*'_'*/] = fanx_Tokenizer.ALPHA;
+for (var i=97/*'a'*/; i<=122/*'z'*/; ++i) afPickle_Tokenizer.charMap[i] = afPickle_Tokenizer.ALPHA;
+for (var i=65/*'A'*/; i<=90/*'Z'*/;  ++i) afPickle_Tokenizer.charMap[i] = afPickle_Tokenizer.ALPHA;
+afPickle_Tokenizer.charMap[95 /*'_'*/] = afPickle_Tokenizer.ALPHA;
 
 // digit characters
-for (var i=48/*'0'*/; i<=57/*'9'*/; ++i) fanx_Tokenizer.charMap[i] = fanx_Tokenizer.DIGIT;
+for (var i=48/*'0'*/; i<=57/*'9'*/; ++i) afPickle_Tokenizer.charMap[i] = afPickle_Tokenizer.DIGIT;
 
 //////////////////////////////////////////////////////////////////////////
 // Undo
 //////////////////////////////////////////////////////////////////////////
 
-function fanx_Undo(t, v, l) { this.type = t; this.val = v; this.line = l; }
-fanx_Undo.prototype.reset = function(t) { t.reset(this.type, this.val, this.line); }
+function afPickle_Undo(t, v, l) { this.type = t; this.val = v; this.line = l; }
+afPickle_Undo.prototype.reset = function(t) { t.reset(this.type, this.val, this.line); }
 

@@ -2,9 +2,9 @@
 /**
  * ObjDecoder parses an object tree from an input stream.
  */
-function fanx_ObjDecoder(input, options)
+function afPickle_ObjDecoder(input, options)
 {
-  this.tokenizer = new fanx_Tokenizer(input);
+  this.tokenizer = new afPickle_Tokenizer(input);
   this.options = options;
   this.curt = null;
   this.usings = [];
@@ -19,7 +19,7 @@ function fanx_ObjDecoder(input, options)
 /**
  * Read an object from the stream.
  */
-fanx_ObjDecoder.prototype.readObj = function()
+afPickle_ObjDecoder.prototype.readObj = function()
 {
   this.readHeader();
   return this.$readObj(null, null, true);
@@ -28,9 +28,9 @@ fanx_ObjDecoder.prototype.readObj = function()
 /**
  * header := [using]*
  */
-fanx_ObjDecoder.prototype.readHeader = function()
+afPickle_ObjDecoder.prototype.readHeader = function()
 {
-  while (this.curt == fanx_Token.USING)
+  while (this.curt == afPickle_Token.USING)
     this.usings[this.numUsings++] = this.readUsing();
 }
 
@@ -40,7 +40,7 @@ fanx_ObjDecoder.prototype.readHeader = function()
  * usingType := "using" podName::typeName
  * usingAs   := "using" podName::typeName "as" name
  */
-fanx_ObjDecoder.prototype.readUsing = function()
+afPickle_ObjDecoder.prototype.readUsing = function()
 {
   var line = this.tokenizer.line;
   this.consume();
@@ -48,10 +48,10 @@ fanx_ObjDecoder.prototype.readUsing = function()
   var podName = this.consumeId("Expecting pod name");
   var pod = fan.sys.Pod.find(podName, false);
   if (pod == null) throw this.err("Unknown pod: " + podName);
-  if (this.curt != fanx_Token.DOUBLE_COLON)
+  if (this.curt != afPickle_Token.DOUBLE_COLON)
   {
     this.endOfStmt(line);
-    return new fanx_UsingPod(pod);
+    return new afPickle_UsingPod(pod);
   }
 
   this.consume();
@@ -59,23 +59,23 @@ fanx_ObjDecoder.prototype.readUsing = function()
   var t = pod.type(typeName, false);
   if (t == null) throw this.err("Unknown type: " + podName + "::" + typeName);
 
-  if (this.curt == fanx_Token.AS)
+  if (this.curt == afPickle_Token.AS)
   {
     this.consume();
     typeName = this.consumeId("Expecting using as name");
   }
 
   this.endOfStmt(line);
-  return new fanx_UsingType(t, typeName);
+  return new afPickle_UsingType(t, typeName);
 }
 
 /**
  * obj := literal | simple | complex
  */
-fanx_ObjDecoder.prototype.$readObj = function(curField, peekType, root)
+afPickle_ObjDecoder.prototype.$readObj = function(curField, peekType, root)
 {
   // literals are stand alone
-  if (fanx_Token.isLiteral(this.curt))
+  if (afPickle_Token.isLiteral(this.curt))
   {
     var val = this.tokenizer.val;
     this.consume();
@@ -83,7 +83,7 @@ fanx_ObjDecoder.prototype.$readObj = function(curField, peekType, root)
   }
 
   // [ is always list/map collection
-  if (this.curt == fanx_Token.LBRACKET)
+  if (this.curt == afPickle_Token.LBRACKET)
     return this.readCollection(curField, peekType);
 
   // at this point all remaining options must start
@@ -96,11 +96,11 @@ fanx_ObjDecoder.prototype.$readObj = function(curField, peekType, root)
   // simple:   type(
   // list/map: type[
   // complex:  type || type{
-  if (this.curt == fanx_Token.LPAREN)
+  if (this.curt == afPickle_Token.LPAREN)
     return this.readSimple(line, t);
-  else if (this.curt == fanx_Token.POUND)
+  else if (this.curt == afPickle_Token.POUND)
     return this.readTypeOrSlotLiteral(line, t);
-  else if (this.curt == fanx_Token.LBRACKET)
+  else if (this.curt == afPickle_Token.LBRACKET)
     return this.readCollection(curField, t);
   else
     return this.readComplex(line, t, root);
@@ -110,10 +110,10 @@ fanx_ObjDecoder.prototype.$readObj = function(curField, peekType, root)
  * typeLiteral := type "#"
  * slotLiteral := type "#" id
  */
-fanx_ObjDecoder.prototype.readTypeOrSlotLiteral = function(line, t)
+afPickle_ObjDecoder.prototype.readTypeOrSlotLiteral = function(line, t)
 {
-  this.consume(fanx_Token.POUND, "Expected '#' for type literal");
-  if (this.curt == fanx_Token.ID && !this.isEndOfStmt(line))
+  this.consume(afPickle_Token.POUND, "Expected '#' for type literal");
+  if (this.curt == afPickle_Token.ID && !this.isEndOfStmt(line))
   {
     var slotName = this.consumeId("slot literal name");
     return t.slot(slotName);
@@ -127,12 +127,12 @@ fanx_ObjDecoder.prototype.readTypeOrSlotLiteral = function(line, t)
 /**
  * simple := type "(" str ")"
  */
-fanx_ObjDecoder.prototype.readSimple = function(line, t)
+afPickle_ObjDecoder.prototype.readSimple = function(line, t)
 {
   // parse: type(str)
-  this.consume(fanx_Token.LPAREN, "Expected ( in simple");
+  this.consume(afPickle_Token.LPAREN, "Expected ( in simple");
   var str = this.consumeStr("Expected string literal for simple");
-  this.consume(fanx_Token.RPAREN, "Expected ) in simple");
+  this.consume(afPickle_Token.RPAREN, "Expected ) in simple");
 
   // TEMP
   try
@@ -177,7 +177,7 @@ fanx_ObjDecoder.prototype.readSimple = function(line, t)
  * fields  := "{" field (eos field)* "}"
  * field   := name "=" obj
  */
-fanx_ObjDecoder.prototype.readComplex = function(line, t, root)
+afPickle_ObjDecoder.prototype.readComplex = function(line, t, root)
 {
   var toSet = fan.sys.Map.make(fan.sys.Field.$type, fan.sys.Obj.$type.toNullable());
   var toAdd = fan.sys.List.make(fan.sys.Obj.$type.toNullable());
@@ -242,21 +242,21 @@ fanx_ObjDecoder.prototype.readComplex = function(line, t, root)
   return obj;
 }
 
-fanx_ObjDecoder.prototype.readComplexFields = function(t, toSet, toAdd)
+afPickle_ObjDecoder.prototype.readComplexFields = function(t, toSet, toAdd)
 {
-  if (this.curt != fanx_Token.LBRACE) return;
+  if (this.curt != afPickle_Token.LBRACE) return;
   this.consume();
 
   // fields and/or collection items
-  while (this.curt != fanx_Token.RBRACE)
+  while (this.curt != afPickle_Token.RBRACE)
   {
     // try to read "id =" to see if we have a field
     var line = this.tokenizer.line;
     var readField = false;
-    if (this.curt == fanx_Token.ID)
+    if (this.curt == afPickle_Token.ID)
     {
       var name = this.consumeId("Expected field name");
-      if (this.curt == fanx_Token.EQ)
+      if (this.curt == afPickle_Token.EQ)
       {
         // we have "id =" so read field
         this.consume();
@@ -267,20 +267,20 @@ fanx_ObjDecoder.prototype.readComplexFields = function(t, toSet, toAdd)
       {
         // pushback to reset on start of collection item
         this.tokenizer.undo(this.tokenizer.type, this.tokenizer.val, this.tokenizer.line);
-        this.curt = this.tokenizer.reset(fanx_Token.ID, name, line);
+        this.curt = this.tokenizer.reset(afPickle_Token.ID, name, line);
       }
     }
 
     // if we didn't read a field, we assume a collection item
     if (!readField) this.readComplexAdd(t, line, toAdd);
 
-    if (this.curt == fanx_Token.COMMA) this.consume();
+    if (this.curt == afPickle_Token.COMMA) this.consume();
     else this.endOfStmt(line);
   }
-  this.consume(fanx_Token.RBRACE, "Expected '}'");
+  this.consume(afPickle_Token.RBRACE, "Expected '}'");
 }
 
-fanx_ObjDecoder.prototype.readComplexSet = function(t, line, name, toSet)
+afPickle_ObjDecoder.prototype.readComplexSet = function(t, line, name, toSet)
 {
   // resolve field
   var field = t.field(name, false);
@@ -303,7 +303,7 @@ fanx_ObjDecoder.prototype.readComplexSet = function(t, line, name, toSet)
   toSet.set(field, val);
 }
 
-fanx_ObjDecoder.prototype.complexSet = function(obj, field, val, line)
+afPickle_ObjDecoder.prototype.complexSet = function(obj, field, val, line)
 {
   try
   {
@@ -318,7 +318,7 @@ fanx_ObjDecoder.prototype.complexSet = function(obj, field, val, line)
   }
 }
 
-fanx_ObjDecoder.prototype.readComplexAdd = function(t, line, toAdd)
+afPickle_ObjDecoder.prototype.readComplexAdd = function(t, line, toAdd)
 {
   var val = this.$readObj(null, null, false);
 
@@ -326,7 +326,7 @@ fanx_ObjDecoder.prototype.readComplexAdd = function(t, line, toAdd)
   toAdd.add(val);
 }
 
-fanx_ObjDecoder.prototype.complexAdd = function(t, obj, addMethod, val, line)
+afPickle_ObjDecoder.prototype.complexAdd = function(t, obj, addMethod, val, line)
 {
   try
   {
@@ -345,10 +345,10 @@ fanx_ObjDecoder.prototype.complexAdd = function(t, obj, addMethod, val, line)
 /**
  * collection := list | map
  */
-fanx_ObjDecoder.prototype.readCollection = function(curField, t)
+afPickle_ObjDecoder.prototype.readCollection = function(curField, t)
 {
   // opening [
-  this.consume(fanx_Token.LBRACKET, "Expecting '['");
+  this.consume(afPickle_Token.LBRACKET, "Expecting '['");
 
   // if this could be a map type signature:
   //    [qname:qname]
@@ -357,20 +357,20 @@ fanx_ObjDecoder.prototype.readCollection = function(curField, t)
   // or it could just be the type signature of
   // of a embedded simple, complex, or list
   var peekType = null;
-  if (this.curt == fanx_Token.ID && t == null)
+  if (this.curt == afPickle_Token.ID && t == null)
   {
     // peek at the type
     peekType = this.readType();
 
     // if we have [mapType] then this is non-inferred type signature
-    if (this.curt == fanx_Token.RBRACKET && peekType instanceof fan.sys.MapType)
+    if (this.curt == afPickle_Token.RBRACKET && peekType instanceof fan.sys.MapType)
     {
       t = peekType; peekType = null;
       this.consume();
-      while (this.curt == fanx_Token.LRBRACKET) { this.consume(); t = t.toListOf(); }
-      if (this.curt == fanx_Token.QUESTION) { this.consume(); t = t.toNullable(); }
-      if (this.curt == fanx_Token.POUND) { this.consume(); return t; }
-      this.consume(fanx_Token.LBRACKET, "Expecting '['");
+      while (this.curt == afPickle_Token.LRBRACKET) { this.consume(); t = t.toListOf(); }
+      if (this.curt == afPickle_Token.QUESTION) { this.consume(); t = t.toNullable(); }
+      if (this.curt == afPickle_Token.POUND) { this.consume(); return t; }
+      this.consume(afPickle_Token.LBRACKET, "Expecting '['");
     }
 
     // if the type was a FFI JavaType, this isn't a collection
@@ -379,18 +379,18 @@ fanx_ObjDecoder.prototype.readCollection = function(curField, t)
   }
 
   // handle special case of [,]
-  if (this.curt == fanx_Token.COMMA && peekType == null)
+  if (this.curt == afPickle_Token.COMMA && peekType == null)
   {
     this.consume();
-    this.consume(fanx_Token.RBRACKET, "Expecting ']'");
+    this.consume(afPickle_Token.RBRACKET, "Expecting ']'");
     return fan.sys.List.make(this.toListOfType(t, curField, false), []);
   }
 
   // handle special case of [:]
-  if (this.curt == fanx_Token.COLON && peekType == null)
+  if (this.curt == afPickle_Token.COLON && peekType == null)
   {
     this.consume();
-    this.consume(fanx_Token.RBRACKET, "Expecting ']'");
+    this.consume(afPickle_Token.RBRACKET, "Expecting ']'");
     return fan.sys.Map.make(this.toMapType(t, curField, false));
   }
 
@@ -398,7 +398,7 @@ fanx_ObjDecoder.prototype.readCollection = function(curField, t)
   var first = this.$readObj(null, peekType, false);
 
   // now we can distinguish b/w list and map
-  if (this.curt == fanx_Token.COLON)
+  if (this.curt == afPickle_Token.COLON)
     return this.readMap(this.toMapType(t, curField, true), first);
   else
     return this.readList(this.toListOfType(t, curField, true), first);
@@ -407,20 +407,20 @@ fanx_ObjDecoder.prototype.readCollection = function(curField, t)
 /**
  * list := "[" obj ("," obj)* "]"
  */
-fanx_ObjDecoder.prototype.readList = function(of, first)
+afPickle_ObjDecoder.prototype.readList = function(of, first)
 {
   // setup accumulator
   var acc = [];
   acc.push(first)
 
   // parse list items
-  while (this.curt != fanx_Token.RBRACKET)
+  while (this.curt != afPickle_Token.RBRACKET)
   {
-    this.consume(fanx_Token.COMMA, "Expected ','");
-    if (this.curt == fanx_Token.RBRACKET) break;
+    this.consume(afPickle_Token.COMMA, "Expected ','");
+    if (this.curt == afPickle_Token.RBRACKET) break;
     acc.push(this.$readObj(null, null, false));
   }
-  this.consume(fanx_Token.RBRACKET, "Expected ']'");
+  this.consume(afPickle_Token.RBRACKET, "Expected ']'");
 
   // infer type if needed
   if (of == null) of = fan.sys.Type.common(acc);
@@ -432,7 +432,7 @@ fanx_ObjDecoder.prototype.readList = function(of, first)
  * map     := "[" mapPair ("," mapPair)* "]"
  * mapPair := obj ":" + obj
  */
-fanx_ObjDecoder.prototype.readMap = function(mapType, firstKey)
+afPickle_ObjDecoder.prototype.readMap = function(mapType, firstKey)
 {
   // create map
   var map = mapType == null
@@ -440,20 +440,20 @@ fanx_ObjDecoder.prototype.readMap = function(mapType, firstKey)
     : fan.sys.Map.make(mapType);
 
   // finish first pair
-  this.consume(fanx_Token.COLON, "Expected ':'");
+  this.consume(afPickle_Token.COLON, "Expected ':'");
   map.set(firstKey, this.$readObj(null, null, false));
 
   // parse map pairs
-  while (this.curt != fanx_Token.RBRACKET)
+  while (this.curt != afPickle_Token.RBRACKET)
   {
-    this.consume(fanx_Token.COMMA, "Expected ','");
-    if (this.curt == fanx_Token.RBRACKET) break;
+    this.consume(afPickle_Token.COMMA, "Expected ','");
+    if (this.curt == afPickle_Token.RBRACKET) break;
     var key = this.$readObj(null, null, false);
-    this.consume(fanx_Token.COLON, "Expected ':'");
+    this.consume(afPickle_Token.COLON, "Expected ':'");
     var val = this.$readObj(null, null, false);
     map.set(key, val);
   }
-  this.consume(fanx_Token.RBRACKET, "Expected ']'");
+  this.consume(afPickle_Token.RBRACKET, "Expected ']'");
 
   // infer type if necessary
   if (mapType == null)
@@ -474,7 +474,7 @@ fanx_ObjDecoder.prototype.readMap = function(mapType, firstKey)
  *   3) if inferred is false, then drop back to list of Obj
  *   4) If inferred is true then return null and we'll infer the common type
  */
-fanx_ObjDecoder.prototype.toListOfType = function(t, curField, infer)
+afPickle_ObjDecoder.prototype.toListOfType = function(t, curField, infer)
 {
   if (t != null) return t;
   if (curField != null)
@@ -493,7 +493,7 @@ fanx_ObjDecoder.prototype.toListOfType = function(t, curField, infer)
  *   3) if inferred is false, then drop back to Obj:Obj
  *   4) If inferred is true then return null and we'll infer the common key/val types
  */
-fanx_ObjDecoder.prototype.toMapType = function(t, curField, infer)
+afPickle_ObjDecoder.prototype.toMapType = function(t, curField, infer)
 {
   if (t instanceof fan.sys.MapType)
     return t;
@@ -506,10 +506,10 @@ fanx_ObjDecoder.prototype.toMapType = function(t, curField, infer)
 
   if (infer) return null;
 
-  if (fanx_ObjDecoder.defaultMapType == null)
-    fanx_ObjDecoder.defaultMapType =
+  if (afPickle_ObjDecoder.defaultMapType == null)
+    afPickle_ObjDecoder.defaultMapType =
       new fan.sys.MapType(fan.sys.Obj.$type, fan.sys.Obj.$type.toNullable());
-  return fanx_ObjDecoder.defaultMapType;
+  return afPickle_ObjDecoder.defaultMapType;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -525,26 +525,26 @@ fanx_ObjDecoder.prototype.toMapType = function(t, curField, infer)
  * Note: the mapSig2 with brackets is handled by the
  * method succinctly named readMapTypeOrCollection().
  */
-fanx_ObjDecoder.prototype.readType = function(lbracket)
+afPickle_ObjDecoder.prototype.readType = function(lbracket)
 {
   if (lbracket === undefined) lbracket = false;
   var t = this.readSimpleType();
-  if (this.curt == fanx_Token.QUESTION)
+  if (this.curt == afPickle_Token.QUESTION)
   {
     this.consume();
     t = t.toNullable();
   }
-  if (this.curt == fanx_Token.COLON)
+  if (this.curt == afPickle_Token.COLON)
   {
     this.consume();
     t = new fan.sys.MapType(t, this.readType());
   }
-  while (this.curt == fanx_Token.LRBRACKET)
+  while (this.curt == afPickle_Token.LRBRACKET)
   {
     this.consume();
     t = t.toListOf();
   }
-  if (this.curt == fanx_Token.QUESTION)
+  if (this.curt == afPickle_Token.QUESTION)
   {
     this.consume();
     t = t.toNullable();
@@ -555,14 +555,14 @@ fanx_ObjDecoder.prototype.readType = function(lbracket)
 /**
  * qname := [podName "::"] typeName
  */
-fanx_ObjDecoder.prototype.readSimpleType = function()
+afPickle_ObjDecoder.prototype.readSimpleType = function()
 {
   // parse identifier
   var line = this.tokenizer.line;
   var n = this.consumeId("Expected type signature");
 
   // check for using imported name
-  if (this.curt != fanx_Token.DOUBLE_COLON)
+  if (this.curt != afPickle_Token.DOUBLE_COLON)
   {
     for (var i=0; i<this.numUsings; ++i)
     {
@@ -573,7 +573,7 @@ fanx_ObjDecoder.prototype.readSimpleType = function()
   }
 
   // must be fully qualified
-  this.consume(fanx_Token.DOUBLE_COLON, "Expected ::");
+  this.consume(afPickle_Token.DOUBLE_COLON, "Expected ::");
   var typeName = this.consumeId("Expected type name");
 
   // resolve pod
@@ -593,9 +593,9 @@ fanx_ObjDecoder.prototype.readSimpleType = function()
 /**
  * Create exception based on tokenizers current line.
  */
-fanx_ObjDecoder.prototype.err = function(msg)
+afPickle_ObjDecoder.prototype.err = function(msg)
 {
-  return fanx_ObjDecoder.err(msg, this.tokenizer.line);
+  return afPickle_ObjDecoder.err(msg, this.tokenizer.line);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -605,9 +605,9 @@ fanx_ObjDecoder.prototype.err = function(msg)
 /**
  * Consume the current token as a identifier.
  */
-fanx_ObjDecoder.prototype.consumeId = function(expected)
+afPickle_ObjDecoder.prototype.consumeId = function(expected)
 {
-  this.verify(fanx_Token.ID, expected);
+  this.verify(afPickle_Token.ID, expected);
   var id = this.tokenizer.val;
   this.consume();
   return id;
@@ -616,9 +616,9 @@ fanx_ObjDecoder.prototype.consumeId = function(expected)
 /**
  * Consume the current token as a String literal.
  */
-fanx_ObjDecoder.prototype.consumeStr = function(expected)
+afPickle_ObjDecoder.prototype.consumeStr = function(expected)
 {
-  this.verify(fanx_Token.STR_LITERAL, expected);
+  this.verify(afPickle_Token.STR_LITERAL, expected);
   var id = this.tokenizer.val;
   this.consume();
   return id;
@@ -628,7 +628,7 @@ fanx_ObjDecoder.prototype.consumeStr = function(expected)
  * Check that the current token matches the
  * specified type, and then consume it.
  */
-fanx_ObjDecoder.prototype.consume = function(type, expected)
+afPickle_ObjDecoder.prototype.consume = function(type, expected)
 {
   if (type != undefined)
     this.verify(type, expected);
@@ -639,61 +639,61 @@ fanx_ObjDecoder.prototype.consume = function(type, expected)
  * Check that the current token matches the specified
  * type, but do not consume it.
  */
-fanx_ObjDecoder.prototype.verify = function(type, expected)
+afPickle_ObjDecoder.prototype.verify = function(type, expected)
 {
   if (this.curt != type)
-    throw this.err(expected + ", not '" + fanx_Token.toString(this.curt) + "'");
+    throw this.err(expected + ", not '" + afPickle_Token.toString(this.curt) + "'");
 }
 
 /**
  * Is current token part of the next statement?
  */
-fanx_ObjDecoder.prototype.isEndOfStmt = function(lastLine)
+afPickle_ObjDecoder.prototype.isEndOfStmt = function(lastLine)
 {
-  if (this.curt == fanx_Token.EOF) return true;
-  if (this.curt == fanx_Token.SEMICOLON) return true;
+  if (this.curt == afPickle_Token.EOF) return true;
+  if (this.curt == afPickle_Token.SEMICOLON) return true;
   return lastLine < this.tokenizer.line;
 }
 
 /**
  * Statements can be terminated with a semicolon, end of line or } end of block.
  */
-fanx_ObjDecoder.prototype.endOfStmt = function(lastLine)
+afPickle_ObjDecoder.prototype.endOfStmt = function(lastLine)
 {
-  if (this.curt == fanx_Token.SEMICOLON) { this.consume(); return; }
+  if (this.curt == afPickle_Token.SEMICOLON) { this.consume(); return; }
   if (lastLine < this.tokenizer.line) return;
-  if (this.curt == fanx_Token.RBRACE) return;
-  throw this.err("Expected end of statement: semicolon, newline, or end of block; not '" + fanx_Token.toString(this.curt) + "'");
+  if (this.curt == afPickle_Token.RBRACE) return;
+  throw this.err("Expected end of statement: semicolon, newline, or end of block; not '" + afPickle_Token.toString(this.curt) + "'");
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Static
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjDecoder.decode = function(s)
+afPickle_ObjDecoder.decode = function(s)
 {
-  return new fanx_ObjDecoder(fan.sys.InStream.makeForStr(s), null).readObj();
+  return new afPickle_ObjDecoder(fan.sys.InStream.makeForStr(s), null).readObj();
 }
 
-fanx_ObjDecoder.err = function(msg, line)
+afPickle_ObjDecoder.err = function(msg, line)
 {
   return fan.sys.IOErr.make(msg + " [Line " + line + "]");
 }
 
-fanx_ObjDecoder.defaultMapType = null;
+afPickle_ObjDecoder.defaultMapType = null;
 
 //////////////////////////////////////////////////////////////////////////
 // Using
 //////////////////////////////////////////////////////////////////////////
 
-function fanx_UsingPod(p) { this.pod = p; }
-fanx_UsingPod.prototype.resolve = function(n)
+function afPickle_UsingPod(p) { this.pod = p; }
+afPickle_UsingPod.prototype.resolve = function(n)
 {
   return this.pod.type(n, false);
 }
 
-function fanx_UsingType(t,n) { this.type = t; this.name = n; }
-fanx_UsingType.prototype.resolve = function(n)
+function afPickle_UsingType(t,n) { this.type = t; this.name = n; }
+afPickle_UsingType.prototype.resolve = function(n)
 {
   return this.name == n ? this.type : null;
 }
