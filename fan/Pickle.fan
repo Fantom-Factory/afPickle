@@ -1,6 +1,4 @@
 
-// FIXME add using options = add sys by default
-
 @Js class Pickle {
 	
 	** Read a serialized object from the stream according to
@@ -29,5 +27,8 @@
 	**   - "skipErrors": Bool specifies if we should skip objects which
 	**     aren't serializable. If true then we output null and a comment.
 	**     Default is false.
+	**   - "usings": List of strings that specify pod names to use, 
+	**     example: '["usings":["sys", "afPickle"]]'
+	**     Default is an empty list.
 	native static Str writeObj(Obj? obj, [Str:Obj]? options := null)
 }

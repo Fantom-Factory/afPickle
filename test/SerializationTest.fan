@@ -740,7 +740,7 @@ class SerializationTest : Test {
 	Void testSkipErrors() {
 		verifySkipErrors(
 			 Obj?[SerA.make,this,SerA.make],
-			 "using sys\n\nObj?[afPickle::SerA,null /* Not serializable: ${Type.of(this).qname} */,afPickle::SerA]",
+			 "sys::Obj?[afPickle::SerA,null /* Not serializable: ${Type.of(this).qname} */,afPickle::SerA]",
 			 Obj?[SerA.make,null,SerA.make])
 	}
 

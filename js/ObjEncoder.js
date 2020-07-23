@@ -10,7 +10,7 @@ function afPickle_ObjEncoder(out, options) {
 	this.skipErrors		= false;
 	this.curFieldType	= null;
 	this.defaultObjs	= null;
-	this.usings			= fan.sys.List.make(fan.sys.Str.$type, ["sys"]);
+	this.usings			= fan.sys.List.make(fan.sys.Str.$type, []);
 	if (options != null) this.initOptions(options);
 
 	if (this.usings.size() > 0) {

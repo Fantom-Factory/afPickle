@@ -7,24 +7,24 @@
 		// It was only half implemented, so I don't think he liked it anyway!
 		
 		fog = writeObj(2min)
-		verifyEq(fog, "using sys\n\n2min")
+		verifyEq(fog, "2min")
 
 		fog = writeObj(`http://fantomfactory.com`)
-		verifyEq(fog, "using sys\n\n`http://fantomfactory.com/`")
+		verifyEq(fog, "`http://fantomfactory.com/`")
 		
 		fog = writeObj(TestLiterals#)
-		verifyEq(fog, "using sys\n\nafPickle::TestLiterals#")
+		verifyEq(fog, "afPickle::TestLiterals#")
 
 		// requires this sys patch from "JS: Type methods (undefined)"
 		// https://fantom.org/forum/topic/2770
 		fog = writeObj(TestLiterals#testLiterals)
-		verifyEq(fog, "using sys\n\nafPickle::TestLiterals#testLiterals")
+		verifyEq(fog, "afPickle::TestLiterals#testLiterals")
 		
 		fog = writeObj(Str[,])
-		verifyEq(fog, "using sys\n\nStr[,]")
+		verifyEq(fog, "sys::Str[,]")
 		
 		fog = writeObj(Str:Int[:])
-		verifyEq(fog, "using sys\n\n[Str:Int][:]")
+		verifyEq(fog, "[sys::Str:sys::Int][:]")
 	}
 	
 	Str writeObj(Obj? obj) {

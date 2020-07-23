@@ -370,5 +370,5 @@ public class ObjEncoder {
 	boolean		skipErrors		= false;
 	Type		curFieldType;
 	HashMap		defaultObjs;
-	List		usings			= List.make(Sys.StrType, new String[]{"sys"});
+	List		usings			= List.make(Sys.StrType, new String[]{});
 }
