@@ -438,6 +438,7 @@ afPickle_ObjDecoder.prototype.readMap = function(mapType, firstKey)
   var map = mapType == null
     ? fan.sys.Map.make(fan.sys.Obj.$type, fan.sys.Obj.$type.toNullable())
     : fan.sys.Map.make(mapType);
+  map.ordered$(true);
 
   // finish first pair
   this.consume(afPickle_Token.COLON, "Expected ':'");
