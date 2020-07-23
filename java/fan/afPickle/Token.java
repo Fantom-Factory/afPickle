@@ -1,11 +1,3 @@
-//
-// Copyright (c) 2006, Brian Frank and Andy Frank
-// Licensed under the Academic Free License version 3.0
-//
-// History:
-//    3 Sep 05  Brian Frank  Creation for Fan compiler
-//   17 Aug 07  Brian        Rework for serialization parser
-//
 package fan.afPickle;
 
 /**

@@ -1,10 +1,3 @@
-//
-// Copyright (c) 2010, Brian Frank and Andy Frank
-// Licensed under the Academic Free License version 3.0
-//
-// History:
-//   11 Jun 10  Andy Frank  Creation
-//
 
 /**
  * ObjEncoder serializes an object to an output stream.

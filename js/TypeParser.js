@@ -1,10 +1,3 @@
-//
-// Copyright (c) 2009, Brian Frank and Andy Frank
-// Licensed under the Academic Free License version 3.0
-//
-// History:
-//   14 May 09  Andy Frank  Creation
-//
 
 /**
  * TypeParser is used to parser formal type signatures which are

@@ -1,11 +1,3 @@
-//
-// Copyright (c) 2009, Brian Frank and Andy Frank
-// Licensed under the Academic Free License version 3.0
-//
-// History:
-//   9 May 09   Andy Frank  Creation
-//   20 May 09  Andy Frank  Refactor to new OO model
-//
 
 /**
  * ObjDecoder parses an object tree from an input stream.

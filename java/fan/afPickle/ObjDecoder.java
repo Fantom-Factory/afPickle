@@ -1,10 +1,3 @@
-//
-// Copyright (c) 2007, Brian Frank and Andy Frank
-// Licensed under the Academic Free License version 3.0
-//
-// History:
-//   18 Aug 07  Brian Frank  Creation
-//
 package fan.afPickle;
 
 import fan.sys.*;

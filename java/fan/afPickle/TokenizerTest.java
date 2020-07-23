@@ -1,10 +1,3 @@
-//
-// Copyright (c) 2006, Brian Frank and Andy Frank
-// Licensed under the Academic Free License version 3.0
-//
-// History:
-//   3 Sep 05  Brian Frank  Creation
-//
 package fan.afPickle;
 
 import java.util.*;
