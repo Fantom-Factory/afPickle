@@ -6,10 +6,6 @@ using concurrent::AtomicInt
 	Void testSkipDefaults() {
 		list := [Topic2644_Obj1("bongo")]
 		fog  := pickleWrite(list, ["skipDefaults":true])
-		
-		echo(fog.replace("\t", "#"))
-		echo("afPickle::Topic2644_Obj1[\n\tafPickle::Topic2644_Obj1 {\n\t\tname=\"bongo\"\n\t}\n]".replace("\t", "#"))
-		
 		verifyEq("afPickle::Topic2644_Obj1[\n\tafPickle::Topic2644_Obj1 {\n\t\tname=\"bongo\"\n\t}\n]", fog)
 	}
 	

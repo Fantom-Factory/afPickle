@@ -3,12 +3,12 @@
  * ObjEncoder serializes an object to an output stream.
  */
 function afPickle_ObjEncoder(out, options) {
-	this.out		= out;
-	this.level	= 0;
-	this.indent = 0;
-	this.skipDefaults = false;
-	this.skipErrors	 = false;
-	this.curFieldType = null;
+	this.out			= out;
+	this.level			= 0;
+	this.indent			= "\t";
+	this.skipDefaults	= false;
+	this.skipErrors		= false;
+	this.curFieldType	= null;
 	this.defaultObjs	= null;
 	if (options != null) this.initOptions(options);
 }
@@ -114,7 +114,7 @@ afPickle_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
 		}
 
 		// if first then open braces
-		if (first) { this.w('\n').wIndent().w('{').w('\n'); this.level++; first = false; }
+		if (first) { this.w(' ').w('{').w('\n'); this.level++; first = false; }
 
 		// field name =
 		this.wIndent().w(f.$name()).w('=');
@@ -189,7 +189,6 @@ afPickle_ObjEncoder.prototype.writeList = function(list) {
 	if (size == 0) { this.w("[,]"); return; }
 
 	// items
-	if (nl) this.w('\n').wIndent();
 	this.w('[');
 	this.level++;
 	for (var i=0; i<size; ++i) {
@@ -278,15 +277,14 @@ afPickle_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
 }
 
 afPickle_ObjEncoder.prototype.wIndent = function() {
-	var num = this.level * this.indent;
-	for (var i=0; i<num; ++i) this.w(' ');
+	for (var i=0; i<this.level; ++i) this.w(this.indent);
 	return this;
 }
 
 afPickle_ObjEncoder.prototype.w = function(s) {
 	var len = s.length;
-	for (var i=0; i<len; ++i)
-		this.out.writeChar(s.charCodeAt(i));
+		for (var i=0; i<len; ++i)
+			this.out.writeChar(s.charCodeAt(i));
 	return this;
 }
 
@@ -295,15 +293,21 @@ afPickle_ObjEncoder.prototype.w = function(s) {
 //////////////////////////////////////////////////////////////////////////
 
 afPickle_ObjEncoder.prototype.initOptions = function(options) {
-	this.indent = afPickle_ObjEncoder.option(options, "indent", this.indent);
-	this.skipDefaults = afPickle_ObjEncoder.option(options, "skipDefaults", this.skipDefaults);
-	this.skipErrors = afPickle_ObjEncoder.option(options, "skipErrors", this.skipErrors);
+	this.indent			= afPickle_ObjEncoder.option(options, "indent", this.indent);
+	this.skipDefaults	= afPickle_ObjEncoder.option(options, "skipDefaults", this.skipDefaults);
+	this.skipErrors		= afPickle_ObjEncoder.option(options, "skipErrors", this.skipErrors);
+
+	if (typeof this.indent == "number")
+		this.indent = " ".repeat(this.indent);
+	else
+		this.indent = this.indent.toString();
+
 	if (this.skipDefaults)
 		this.defaultObjs = {}
 }
 
 afPickle_ObjEncoder.option = function(options, name, def) {
 	var val = options.get(name);
-	if (val == null) return def;
+	if (val == null || val == undefined) return def;
 	return val;
 }
