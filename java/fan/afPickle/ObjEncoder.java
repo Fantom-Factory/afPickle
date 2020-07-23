@@ -30,6 +30,13 @@ public class ObjEncoder {
 	public ObjEncoder(OutStream out, Map options) {
 		this.out = out;
 		if (options != null) initOptions(options);
+		
+		if (usings.size() > 0) {
+			for (Object using : usings.toArray()) {
+				out.writeChars("using ").writeChars((String) using).writeChar('\n');
+			}
+			out.writeChar('\n');
+		}
 	}
 
 //////////////////////////////////////////////////////////////////////////
@@ -43,11 +50,11 @@ public class ObjEncoder {
 		}
 
 		if (obj.getClass().getName().charAt(0) == 'j') {
-			if (obj instanceof Boolean) { w(obj.toString()); return; }
-			if (obj instanceof String)	{ wStrLiteral(obj.toString(), '"'); return; }
-			if (obj instanceof Long)		{ w(obj.toString()); return; }
-			if (obj instanceof Double)	{ encodeFloat((Double)obj, this); return; }
-			if (obj instanceof BigDecimal) { encodeDecimal((BigDecimal)obj, this); return; }
+			if (obj instanceof Boolean)		{ w(obj.toString());					return; }
+			if (obj instanceof String)		{ wStrLiteral(obj.toString(), '"');		return; }
+			if (obj instanceof Long)		{ w(obj.toString());					return; }
+			if (obj instanceof Double)		{ encodeFloat((Double)obj, this);		return; }
+			if (obj instanceof BigDecimal)	{ encodeDecimal((BigDecimal)obj, this);	return; }
 		}
 
 		// fanx.serial.Literal implementations
@@ -73,8 +80,7 @@ public class ObjEncoder {
 			else
 				writeComplex(type, obj, ser);
 		}
-		else
-		{
+		else {
 			if (skipErrors)
 				w("null /* Not serializable: ").w(type.qname()).w(" */");
 			else
@@ -285,7 +291,9 @@ public class ObjEncoder {
 //////////////////////////////////////////////////////////////////////////
 
 	public final ObjEncoder wType(Type t) {
-		return w(t.signature());
+		return usings.contains(t.pod().name())
+			? w(t.signature().replace(t.pod().name() + "::", ""))
+			: w(t.signature());
 	}
 
 	public final ObjEncoder wStrLiteral(String s, char quote) {
@@ -332,18 +340,15 @@ public class ObjEncoder {
 
 	private void initOptions(Map options) {
 		indent			= option(options, "indent", indent);
-		skipDefaults	= option(options, "skipDefaults", skipDefaults);
-		skipErrors		= option(options, "skipErrors", skipErrors);
+		skipDefaults	= (boolean) options.get("skipDefaults", skipDefaults);
+		skipErrors		= (boolean) options.get("skipErrors", skipErrors);
+		usings			= (List)	options.get("usings", usings);
 		if (skipDefaults)
 			defaultObjs = new HashMap();
+		if (usings == null)
+			usings		= List.make(Sys.StrType, new String[]{});
 	}
 
-	private static boolean option(Map options, String name, boolean def) {
-		Boolean val = (Boolean) options.get(name);
-		if (val == null) return def;
-		return val;
-	}
-	
 	private static String option(Map options, String name, String def) {
 		Object val = (Object) options.get(name);
 		if (val == null) return def;
@@ -358,11 +363,12 @@ public class ObjEncoder {
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
-	OutStream out;
-	int level				= 0;
-	String indent			= "\t";
-	boolean skipDefaults	= false;
-	boolean skipErrors		= false;
-	Type curFieldType;
-	HashMap defaultObjs;
+	OutStream	out;
+	int			level				= 0;
+	String		indent			= "\t";
+	boolean		skipDefaults	= false;
+	boolean		skipErrors		= false;
+	Type		curFieldType;
+	HashMap		defaultObjs;
+	List		usings			= List.make(Sys.StrType, new String[]{"sys"});
 }

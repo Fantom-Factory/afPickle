@@ -10,7 +10,7 @@
 		pickleRead(serial1.in)	// --> okay
 
 		serial2 := pickleWrite(notConstClass)
-		pickleRead(serial2.in)	// --> ERROR!	
+		pickleRead(serial2.in)	// --> ERROR!
 	}
 
 	private Obj? pickleRead(InStream in, [Str:Obj?]? opts := null) {

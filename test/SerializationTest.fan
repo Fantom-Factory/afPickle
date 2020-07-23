@@ -722,7 +722,7 @@ class SerializationTest : Test {
 	}
 
 	Void verifyPrettyPrinting(Obj obj, Str expected) {
-		opts := ["indent":2, "skipDefaults":true]
+		opts := ["indent":2, "skipDefaults":true, "usings":null]
 		actual := pickleWrite(obj, opts)
 //echo("================")
 //echo(actual)
@@ -740,7 +740,7 @@ class SerializationTest : Test {
 	Void testSkipErrors() {
 		verifySkipErrors(
 			 Obj?[SerA.make,this,SerA.make],
-			 "sys::Obj?[afPickle::SerA,null /* Not serializable: ${Type.of(this).qname} */,afPickle::SerA]",
+			 "using sys\n\nObj?[afPickle::SerA,null /* Not serializable: ${Type.of(this).qname} */,afPickle::SerA]",
 			 Obj?[SerA.make,null,SerA.make])
 	}
 

@@ -6,7 +6,7 @@ using concurrent::AtomicInt
 	Void testSkipDefaults() {
 		list := [Topic2644_Obj1("bongo")]
 		fog  := pickleWrite(list, ["skipDefaults":true])
-		verifyEq("afPickle::Topic2644_Obj1[\n\tafPickle::Topic2644_Obj1 {\n\t\tname=\"bongo\"\n\t}\n]", fog)
+		verifyEq("using sys\n\nafPickle::Topic2644_Obj1[\n\tafPickle::Topic2644_Obj1 {\n\t\tname=\"bongo\"\n\t}\n]", fog)
 	}
 	
 	Void testDefObjCreation() {

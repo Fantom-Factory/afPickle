@@ -10,7 +10,22 @@ function afPickle_ObjEncoder(out, options) {
 	this.skipErrors		= false;
 	this.curFieldType	= null;
 	this.defaultObjs	= null;
+	this.usings			= fan.sys.List.make(fan.sys.Str.$type, ["sys"]);
 	if (options != null) this.initOptions(options);
+
+	if (this.usings.size() > 0) {
+		var that = this;
+		this.usings.each(fan.sys.Func.make(
+			fan.sys.List.make(fan.sys.Param.$type, [
+				new fan.sys.Param("val","sys::Str", false),
+			]),
+			fan.sys.Void.$type,
+			function(val) {
+				that.w("using ").w(val).w("\n");
+			})
+		);
+		this.w("\n");
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -252,7 +267,9 @@ afPickle_ObjEncoder.prototype.isMultiLine = function(t) {
 //////////////////////////////////////////////////////////////////////////
 
 afPickle_ObjEncoder.prototype.wType = function(t) {
-	return this.w(t.signature());
+	return this.usings.contains(t.pod().m_name)
+		? this.w(t.signature().split(t.pod().m_name + "::").join(""))
+		: this.w(t.signature());
 }
 
 afPickle_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
@@ -283,8 +300,8 @@ afPickle_ObjEncoder.prototype.wIndent = function() {
 
 afPickle_ObjEncoder.prototype.w = function(s) {
 	var len = s.length;
-		for (var i=0; i<len; ++i)
-			this.out.writeChar(s.charCodeAt(i));
+	for (var i=0; i<len; ++i)
+		this.out.writeChar(s.charCodeAt(i));
 	return this;
 }
 
@@ -293,9 +310,9 @@ afPickle_ObjEncoder.prototype.w = function(s) {
 //////////////////////////////////////////////////////////////////////////
 
 afPickle_ObjEncoder.prototype.initOptions = function(options) {
-	this.indent			= afPickle_ObjEncoder.option(options, "indent", this.indent);
-	this.skipDefaults	= afPickle_ObjEncoder.option(options, "skipDefaults", this.skipDefaults);
-	this.skipErrors		= afPickle_ObjEncoder.option(options, "skipErrors", this.skipErrors);
+	this.indent			= options.get("indent",			this.indent);
+	this.skipDefaults	= options.get("skipDefaults",	this.skipDefaults);
+	this.skipErrors		= options.get("skipErrors",		this.skipErrors);
 
 	if (typeof this.indent == "number")
 		this.indent = " ".repeat(this.indent);
@@ -304,10 +321,10 @@ afPickle_ObjEncoder.prototype.initOptions = function(options) {
 
 	if (this.skipDefaults)
 		this.defaultObjs = {}
-}
 
-afPickle_ObjEncoder.option = function(options, name, def) {
-	var val = options.get(name);
-	if (val == null || val == undefined) return def;
-	return val;
+	if (options.containsKey("usings")) {
+		this.usings = options.get("usings");
+		if (this.usings == null)
+			this.usings = fan.sys.List.make(fan.sys.Str.$type, []);
+	}
 }
