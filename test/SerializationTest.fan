@@ -283,8 +283,9 @@ class SerializationTest : Test {
 
 		x.nList = Num[,]
 		verifySer(
-		"afPickle::SerA {
-		 		sList = [,]
+		"afPickle::SerA
+		 {
+		   sList = [,]
 		 		nList = [,]
 		 	}", x)
 
@@ -624,104 +625,99 @@ class SerializationTest : Test {
 		x.i = 12345
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 	}")
+		   i=12345
+		 }")
 
 		x.f = Float.posInf
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		 }")
 
 		x.nList = Num[,]
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 		nList=[,]
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		   nList=[,]
+		 }")
 
 		x.nList = Num[2,3]
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 		nList=[2,3]
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		   nList=[2,3]
+		 }")
 
 		x.kids = SerA[,]
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 		nList=[2,3]
-		 		kids=[,]
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		   nList=[2,3]
+		   kids=[,]
+		 }")
 
 		x.kids.add(SerA.make)
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 		nList=[2,3]
-		 		kids=
-		 		[
-		 			afPickle::SerA
-		 		]
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		   nList=[2,3]
+		   kids=[
+		     afPickle::SerA
+		   ]
+		 }")
 
 		x.kids[0].d = 5min
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 		nList=[2,3]
-		 		kids=
-		 		[
-		 			afPickle::SerA {
-		 				d=5min
-		 			}
-		 		]
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		   nList=[2,3]
+		   kids=[
+		     afPickle::SerA {
+		       d=5min
+		     }
+		   ]
+		 }")
 
 		x.kids.add(SerB.make)
 		x.kids.add(SerA.make)
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 		nList=[2,3]
-		 		kids=
-		 		[
-		 			afPickle::SerA {
-		 				d=5min
-		 			},
-		 			afPickle::SerB,
-		 			afPickle::SerA
-		 		]
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		   nList=[2,3]
+		   kids=[
+		     afPickle::SerA {
+		       d=5min
+		     },
+		     afPickle::SerB,
+		     afPickle::SerA
+		   ]
+		 }")
 
 		x.kids[2].kids = [SerA.make]
 		verifyPrettyPrinting(x,
 		"afPickle::SerA {
-		 		i=12345
-		 		f=sys::Float(\"INF\")
-		 		nList=[2,3]
-		 		kids=
-		 		[
-		 			afPickle::SerA {
-		 				d=5min
-		 			},
-		 			afPickle::SerB,
-		 			afPickle::SerA {
-		 				kids=
-		 				[
-		 					afPickle::SerA
-		 				]
-		 			}
-		 		]
-		 	}")
+		   i=12345
+		   f=sys::Float(\"INF\")
+		   nList=[2,3]
+		   kids=[
+		     afPickle::SerA {
+		       d=5min
+		     },
+		     afPickle::SerB,
+		     afPickle::SerA {
+		       kids=[
+		         afPickle::SerA
+		       ]
+		     }
+		   ]
+		 }")
 
 	}
 

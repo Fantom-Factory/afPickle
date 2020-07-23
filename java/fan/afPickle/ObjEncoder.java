@@ -142,7 +142,7 @@ public class ObjEncoder {
 			}
 
 			// if first then open braces
-			if (first) { w('\n').wIndent().w('{').w('\n'); level++; first = false; }
+			if (first) { w(' ').w('{').w('\n'); level++; first = false; }
 
 			// field name =
 			wIndent().w(f.name()).w('=');
@@ -221,7 +221,6 @@ public class ObjEncoder {
 		if (size == 0) { w("[,]"); return; }
 
 		// items
-		if (nl) w('\n').wIndent();
 		w('[');
 		level++;
 		for (int i=0; i<size; ++i) {
@@ -311,8 +310,7 @@ public class ObjEncoder {
 	}
 
 	public final ObjEncoder wIndent() {
-		int num = level*indent;
-		for (int i=0; i<num; ++i) w(' ');
+		for (int i=0; i<level; ++i) out.writeChars(indent);
 		return this;
 	}
 
@@ -333,23 +331,27 @@ public class ObjEncoder {
 //////////////////////////////////////////////////////////////////////////
 
 	private void initOptions(Map options) {
-		indent = option(options, "indent", indent);
-		skipDefaults = option(options, "skipDefaults", skipDefaults);
-		skipErrors = option(options, "skipErrors", skipErrors);
+		indent			= option(options, "indent", indent);
+		skipDefaults	= option(options, "skipDefaults", skipDefaults);
+		skipErrors		= option(options, "skipErrors", skipErrors);
 		if (skipDefaults)
 			defaultObjs = new HashMap();
 	}
 
-	private static int option(Map options, String name, int def) {
-		Long val = (Long)options.get(name);
-		if (val == null) return def;
-		return val.intValue();
-	}
-
 	private static boolean option(Map options, String name, boolean def) {
-		Boolean val = (Boolean)options.get(name);
+		Boolean val = (Boolean) options.get(name);
 		if (val == null) return def;
 		return val;
+	}
+	
+	private static String option(Map options, String name, String def) {
+		Object val = (Object) options.get(name);
+		if (val == null) return def;
+		
+		if (val instanceof Long)
+			return String.format("%" + ((Long) val) + "s", " ");
+		
+		return val.toString();
 	}
 
 //////////////////////////////////////////////////////////////////////////
@@ -357,10 +359,10 @@ public class ObjEncoder {
 //////////////////////////////////////////////////////////////////////////
 
 	OutStream out;
-	int level	= 0;
-	int indent = 0;
-	boolean skipDefaults = false;
-	boolean skipErrors = false;
+	int level				= 0;
+	String indent			= "\t";
+	boolean skipDefaults	= false;
+	boolean skipErrors		= false;
 	Type curFieldType;
 	HashMap defaultObjs;
 }
