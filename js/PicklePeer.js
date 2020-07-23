@@ -16,6 +16,6 @@ fan.afPickle.PicklePeer.writeObj = function(obj, options) {
 
 	var strBuf	= new fan.sys.StrBuf();
 	var output	= new fan.sys.StrBufOutStream(strBuf);
-	new fanx_ObjEncoder(output, options).writeObj(obj);
+	new afPickle_ObjEncoder(output, options).writeObj(obj);
 	return strBuf.toStr();
 }

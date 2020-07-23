@@ -15,6 +15,8 @@
 		fog = writeObj(TestLiterals#)
 		verifyEq(fog, "afPickle::TestLiterals#")
 
+		// requires this sys patch from "JS: Type methods (undefined)"
+		// https://fantom.org/forum/topic/2770
 		fog = writeObj(TestLiterals#testLiterals)
 		verifyEq(fog, "afPickle::TestLiterals#testLiterals")
 		
