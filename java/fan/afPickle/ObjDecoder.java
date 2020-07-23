@@ -208,7 +208,7 @@ public class ObjDecoder {
 			// if last parameter is an function then pass toSet
 			// as an it-block for setting the fields
 			Param p = (Param)makeCtor.params().last();
-			if (p != null && p.type().fits(Sys.FuncType) && t.isConst()) {
+			if (p != null && p.type().fits(Sys.FuncType)) {
 				if (args == null) args = new List(Sys.ObjType);
 				args.add(Field.makeSetFunc(toSet));
 				setAfterCtor = false;
