@@ -58,7 +58,7 @@ class SerializationTest : Test
     verifySer("-8.4E-6F", -8.4E-6f)
     if (!js)
     {
-      // TODO FIXIT
+      // todo FIXIT
       verifySer("sys::Float(\"NaN\")", Float.nan)
     }
     verifySer("sys::Float(\"INF\")", Float.posInf)
@@ -430,7 +430,7 @@ class SerializationTest : Test
     verifyComplexConst("afPickle::SerConst { c=[sys::Int[,]] }", SerConst.make(0, null, [Int[,]]))
     verifyErr(IOErr#) { verifyComplexConst("afPickle::SerConst { c=5 }", SerConst.make) }
 
-    // TODO
+    // todo
     //verifyErr(IOErr#) { verifyComplexConst("afPickle::SerConst { c=[5] }", SerConst.make) }
   }
 
@@ -466,6 +466,7 @@ class SerializationTest : Test
     verifySer("""[afPickle::SerItBlock { a="A!"; b="B!" }]""", [SerItBlock{it.a="A!";it.b="B!"}])
     verifySer("""[afPickle::SerItBlock { a="A!"; b="B!" }]""", [SerItBlock{it.a="A!";it.b="B!"}], ["skipDefaults":true])
 
+    if (!js)	// JS creates the class, but doesn't complain about field "a" not being set in the ctor
     verifyErr(IOErr#) { verifySer("""afPickle::SerItBlock {}""", null) }
   }
 
