@@ -2,3 +2,9 @@
 Overview
 ********
 afPickle - My Awesome pickle project
+
+ - [Serialization shenanigans]`https://fantom.org/forum/topic/1787` - it-blocks ctors may take other args
+ - [OutStream.writeObj() with skipDefaults]`https://fantom.org/forum/topic/2644` - Optimised 'skipDefaults' option
+ - [js: Ordered map is unordered after serialization]`https://fantom.org/forum/topic/2669` - fixed it - also see https://fantom.org/forum/topic/2059
+ - [@Serializable, non-const classes, and it-block ctors]`https://fantom.org/forum/topic/2758` - Pickle it!
+

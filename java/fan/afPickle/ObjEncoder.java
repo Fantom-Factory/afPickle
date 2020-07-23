@@ -1,6 +1,7 @@
 package fan.afPickle;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import fan.sys.*;
@@ -121,10 +122,18 @@ public class ObjEncoder
     boolean first = true;
     Object defObj = null;
     if (skipDefaults)
-    {
-      // attempt to instantiate default object for type,
-      // this will fail if complex has it-block ctor
-      try { defObj = FanObj.typeof(obj).make(); } catch (Exception e) {}
+    {     
+      Type defType = FanObj.typeof(obj).toNonNullable();
+      if (defaultObjs.containsKey(defType))
+        // use cached defObj if it exists
+        defObj = defaultObjs.get(defType);
+      else
+      {
+        // else attempt to instantiate default object for type,
+        // this will fail if complex has it-block ctor
+        try { defObj = defType.make(); } catch (Exception e) {}
+        defaultObjs.put(defType, defObj);
+      }
     }
 
     List fields = type.fields();
@@ -358,6 +367,8 @@ public class ObjEncoder
     indent = option(options, "indent", indent);
     skipDefaults = option(options, "skipDefaults", skipDefaults);
     skipErrors = option(options, "skipErrors", skipErrors);
+    if (skipDefaults)
+      defaultObjs = new HashMap();
   }
 
   private static int option(Map options, String name, int def)
@@ -384,5 +395,5 @@ public class ObjEncoder
   boolean skipDefaults = false;
   boolean skipErrors = false;
   Type curFieldType;
-
+  HashMap defaultObjs;
 }

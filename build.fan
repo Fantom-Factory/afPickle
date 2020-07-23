@@ -14,11 +14,16 @@ class Build : BuildPod {
 		depends = [
 			// ---- Fantom Core -----------------
 			"sys        1.0.70 - 1.0",
+			
+			// ---- Test ------------------------
+			"concurrent 1.0.70 - 1.0",
 		]
 
 		srcDirs		= [`fan/`, `test/`]
 		resDirs		= [`doc/`]
 		jsDirs		= [`js/`]
 		javaDirs	= [`java/fan/afPickle/`]
+		
+		meta["afBuild.testPods"]	= "concurrent"
 	}
 }

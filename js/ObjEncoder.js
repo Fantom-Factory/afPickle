@@ -10,6 +10,7 @@ function afPickle_ObjEncoder(out, options)
   this.skipDefaults = false;
   this.skipErrors   = false;
   this.curFieldType = null;
+  this.defaultObjs  = null;
   if (options != null) this.initOptions(options);
 }
 
@@ -91,9 +92,17 @@ afPickle_ObjEncoder.prototype.writeComplex = function(type, obj, ser)
   var defObj = null;
   if (this.skipDefaults)
   {
-    // attempt to instantiate default object for type,
-    // this will fail if complex has it-block ctor
-    try { defObj = fan.sys.ObjUtil.$typeof(obj).make(); } catch(e) {}
+    var defType = fan.sys.ObjUtil.$typeof(obj).toNonNullable();
+    if (this.defaultObjs[defType] != undefined)
+      // use cached defObj if it exists
+      defObj = this.defaultObjs[defType];
+    else
+    {
+      // else attempt to instantiate default object for type,
+      // this will fail if complex has it-block ctor
+      try { defObj = fan.sys.ObjUtil.$typeof(obj).make(); } catch(e) {}
+      this.defaultObjs[defType] = defObj;
+    }
   }
 
   var fields = type.fields();
@@ -316,6 +325,8 @@ afPickle_ObjEncoder.prototype.initOptions = function(options)
   this.indent = afPickle_ObjEncoder.option(options, "indent", this.indent);
   this.skipDefaults = afPickle_ObjEncoder.option(options, "skipDefaults", this.skipDefaults);
   this.skipErrors = afPickle_ObjEncoder.option(options, "skipErrors", this.skipErrors);
+  if (this.skipDefaults)
+    this.defaultObjs = {}
 }
 
 afPickle_ObjEncoder.option = function(options, name, def)
