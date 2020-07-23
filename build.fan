@@ -16,7 +16,7 @@ class Build : BuildPod {
 			"sys        1.0.70 - 1.0",
 		]
 
-		srcDirs		= [`fan/`]
+		srcDirs		= [`fan/`, `test/`]
 		resDirs		= [`doc/`]
 		jsDirs		= [`js/`]
 		javaDirs	= [`java/fan/afPickle/`]

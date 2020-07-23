@@ -11,7 +11,8 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import fan.sys.*;
-import fanx.util.*;
+import fanx.util.OpUtil;
+import fanx.serial.Literal;
 
 /**
  * ObjEncoder serializes an object to an output stream.
@@ -23,10 +24,10 @@ public class ObjEncoder
 // Static
 //////////////////////////////////////////////////////////////////////////
 
-  public static String encode(Object obj)
+  public static String encode(Object obj, Map options)
   {
     StrBufOutStream out = new StrBufOutStream();
-    new ObjEncoder(out, null).writeObj(obj);
+    new ObjEncoder(out, options).writeObj(obj);
     return out.string();
   }
 
@@ -61,10 +62,19 @@ public class ObjEncoder
       if (obj instanceof BigDecimal) { encodeDecimal((BigDecimal)obj, this); return; }
     }
 
-    if (obj instanceof Literal)
-    {
-      ((Literal)obj).encode(this);
-      return;
+    // fanx.serial.Literal implementations
+    if (obj instanceof Literal) {
+    	if (obj instanceof Duration)	{ w(((Duration)obj).toStr()); }
+    	if (obj instanceof List)		{ writeList((List) obj); }
+    	if (obj instanceof Map)			{ writeMap((Map) obj); }
+    	if (obj instanceof Slot)		{
+    		Slot slot	= (Slot) obj;
+    		Type parent	= slot.parent();
+    		w(parent.signature()).w("#").w(slot.name());
+    	}
+    	if (obj instanceof Type)		{ w(((Type)obj).signature()).w("#"); }
+    	if (obj instanceof Uri)			{ wStrLiteral(((Uri)obj).toStr(), '`'); }
+    	return;
     }
 
     Type type = FanObj.typeof(obj);
