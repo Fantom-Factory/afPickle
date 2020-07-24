@@ -7,8 +7,6 @@
 
 ## Overview
 
-*Pickle is a support library that aids Alien-Factory in the development of other libraries, frameworks and applications. Though you are welcome to use it, you may find features are missing and the documentation incomplete.*
-
 A simple API that pickles Plain Old Fantom Objects to and from strings.
 
 Pickle is a drop-in replacement for the standard [Fantom serialisation framework](https://fantom.org/doc/docLang/Serialization.html). It fixes many bugs, adds new features, and in general, *just works!*
