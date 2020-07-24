@@ -14,7 +14,7 @@
 	}
 
 	private Obj? pickleRead(InStream in, [Str:Obj?]? opts := null) {
-		Pickle.readObj(in, opts)
+		Pickle.readObjFromIn(in, opts)
 	}
 
 	private Str pickleWrite(Obj? obj, [Str:Obj?]? opts := null) {

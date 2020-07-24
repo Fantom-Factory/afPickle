@@ -835,7 +835,7 @@ class SerializationTest : Test {
 	const Bool js := Env.cur.runtime == "js"
 	
 	Obj? pickleRead(InStream in, [Str:Obj?]? opts := null) {
-		Pickle.readObj(in, opts)
+		Pickle.readObjFromIn(in, opts)
 	}
 
 	Str pickleWrite(Obj? obj, [Str:Obj?]? opts := null) {

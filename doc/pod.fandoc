@@ -8,7 +8,7 @@ Pickle is a drop-in replacement for the standard Fantom serialisation framework.
 Pickle enhancements:
  - Pretty printing is event prettier (and enabled by default).
  - Pickled objects may specify pods to automatically use in 'using' statements - to cut down on file size.
- - Works in Java AND Javascript.
+ - Fully tested in Java AND Javascript.
 
 Pickle fixes the following:
  - [@2758]`https://fantom.org/forum/topic/2758` - It-block ctors are used if they exist.
