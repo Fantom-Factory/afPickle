@@ -1,10 +1,40 @@
 
 Overview
 ********
-afPickle - My Awesome pickle project
+A simple API that pickles Plain Old Fantom Objects to and from strings.
 
- - [Serialization shenanigans]`https://fantom.org/forum/topic/1787` - it-blocks ctors may take other args
- - [OutStream.writeObj() with skipDefaults]`https://fantom.org/forum/topic/2644` - Optimised 'skipDefaults' option
- - [js: Ordered map is unordered after serialization]`https://fantom.org/forum/topic/2669` - fixed it - also see https://fantom.org/forum/topic/2669
- - [@Serializable, non-const classes, and it-block ctors]`https://fantom.org/forum/topic/2758` - Pickle it!
+Pickle is a drop-in replacement for the standard Fantom serialisation framework. It fixes many bugs, adds new features, and in general, *just works!*
+
+Pickle enhancements:
+ - Pretty printing is event prettier (and enabled by default).
+ - Pickled objects may specify pods to automatically use in 'using' statements - to cut down on file size.
+ - Works in Java AND Javascript.
+
+Pickle fixes the following:
+ - [@2758]`https://fantom.org/forum/topic/2758` - It-block ctors are used if they exist.
+ - [@2726]`https://fantom.org/forum/topic/2726` - Nested Maps are possible in JS.
+ - [@2669]`https://fantom.org/forum/topic/2669` - Maps are ordered as after de-serialisation.
+ - [@2644]`https://fantom.org/forum/topic/2644` - Optimised serialisation when using the 'skipDefaults' option.
+
+
+
+Quickstart
+**********
+pre>
+syntax: fantom
+str := Pickle.writeObj(Gerkin())
+  // -->
+  // "acme::Gerkin {
+  //      name="Rick"
+  //  }"
+
+juicy := (Gerkin) Pickle.readObj(str)
+echo(juicy.name)  // -> Rick
+
+...
+
+class Gerkin {
+    Str name := "Rick"
+}
+<pre
 
