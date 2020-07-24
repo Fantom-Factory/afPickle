@@ -21,11 +21,19 @@
 		verifyEq(ger.colour,	"Brown")
 		verifyEq(fnCalled, 		true)
 	}
+	
+	Void testSkipNulls() {
+		str := Pickle.writeObj(T_Gerkin1("Orange"){}, ["skipNulls":true])
+		
+		verifyEq(str.contains("colour"),	true)
+		verifyEq(str.contains("name"),		false)
+	}
 }
 
+@Serializable
 @Js class T_Gerkin1 {
-    Str name
-    Str colour
+    Str? name
+    Str? colour
     
     new make(Str colour, |This| f) {
         f(this)

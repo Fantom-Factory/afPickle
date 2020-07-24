@@ -8,6 +8,7 @@ function afPickle_ObjEncoder(out, options) {
 	this.indent			= "\t";
 	this.skipDefaults	= false;
 	this.skipErrors		= false;
+	this.skipNulls		= false;
 	this.curFieldType	= null;
 	this.defaultObjs	= null;
 	this.usings			= fan.sys.List.make(fan.sys.Str.$type, []);
@@ -127,6 +128,10 @@ afPickle_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
 			var defVal = f.get(defObj);
 			if (fan.sys.ObjUtil.equals(val, defVal)) continue;
 		}
+
+		// if skipping nulls
+		if (this.skipNulls && val == null)
+			continue;
 
 		// if first then open braces
 		if (first) { this.w(' ').w('{').w('\n'); this.level++; first = false; }
@@ -313,6 +318,7 @@ afPickle_ObjEncoder.prototype.initOptions = function(options) {
 	this.indent			= options.get("indent",			this.indent);
 	this.skipDefaults	= options.get("skipDefaults",	this.skipDefaults);
 	this.skipErrors		= options.get("skipErrors",		this.skipErrors);
+	this.skipNulls		= options.get("skipNulls",		this.skipNulls);
 
 	if (typeof this.indent == "number")
 		this.indent = " ".repeat(this.indent);

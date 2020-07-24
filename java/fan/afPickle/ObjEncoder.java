@@ -146,6 +146,10 @@ public class ObjEncoder {
 				Object defVal = f.get(defObj);
 				if (OpUtil.compareEQ(val, defVal)) continue;
 			}
+			
+			// if skipping nulls
+			if (skipNulls && val == null)
+				continue;
 
 			// if first then open braces
 			if (first) { w(' ').w('{').w('\n'); level++; first = false; }
@@ -340,9 +344,10 @@ public class ObjEncoder {
 
 	private void initOptions(Map options) {
 		indent			= option(options, "indent", indent);
-		skipDefaults	= (boolean) options.get("skipDefaults", skipDefaults);
-		skipErrors		= (boolean) options.get("skipErrors", skipErrors);
-		usings			= (List)	options.get("usings", usings);
+		skipDefaults	= (boolean) options.get("skipDefaults",	skipDefaults);
+		skipErrors		= (boolean) options.get("skipErrors",	skipErrors);
+		skipNulls		= (boolean) options.get("skipNulls",	skipNulls);
+		usings			= (List)	options.get("usings",		usings);
 		if (skipDefaults)
 			defaultObjs = new HashMap();
 		if (usings == null)
@@ -368,6 +373,7 @@ public class ObjEncoder {
 	String		indent			= "\t";
 	boolean		skipDefaults	= false;
 	boolean		skipErrors		= false;
+	boolean		skipNulls		= false;
 	Type		curFieldType;
 	HashMap		defaultObjs;
 	List		usings			= List.make(Sys.StrType, new String[]{});
