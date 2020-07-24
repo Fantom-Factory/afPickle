@@ -18,6 +18,10 @@ Pickle fixes the following:
  - [@2669]`https://fantom.org/forum/topic/2669` - Maps are ordered as after de-serialisation.
  - [@2644]`https://fantom.org/forum/topic/2644` - Optimised serialisation when using the 'skipDefaults' option.
 
+The Pickle source code mostly **IS** the standard *Fantom serialisation framework*! The framework has been liberated into its own library to guard against it being [deleted from the Fantom code base]`https://fantom.org/forum/topic/2758#c3` and to make much needed updates and adjustments.
+
+Pickle contains native implementations for both Java and Javascript.
+
 
 
 Quickstart

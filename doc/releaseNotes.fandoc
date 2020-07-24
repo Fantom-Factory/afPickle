@@ -2,7 +2,7 @@
 v0.0
 ****
 
-v0.0.2
+v0.0.4
 ======
- - New: First release - base code liberated from core Fantom serialisation framework.
+ - New: First public release - base code liberated from core Fantom serialisation framework.
 
