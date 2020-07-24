@@ -16,7 +16,7 @@
 		readObjFromIn(str.in, options)
 	}
 
-	** A stream version of [readObj()]`Pickle#readObj`.
+	** A stream version of [readObj()]`Pickle.readObj`.
 	native static Obj? readObjFromIn(InStream in, [Str:Obj]? options := null)
 
 	** Pickles an object to a string 
@@ -40,7 +40,7 @@
 		return str.toStr
 	}
 	
-	** A stream version of [writeObj()]`Pickle#writeObj`.
+	** A stream version of [writeObj()]`Pickle.writeObj`.
 	native static Void writeObjToOut(OutStream out, Obj? obj, [Str:Obj]? options := null)
 	
 }
