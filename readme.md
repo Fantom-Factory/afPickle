@@ -1,21 +1,25 @@
-# Pickle v0.0.2
+# Pickle v0.0.4
 ---
 
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](https://fantom-lang.org/)
-[![pod: v0.0.2](http://img.shields.io/badge/pod-v0.0.2-yellow.svg)](http://eggbox.fantomfactory.org/pods/afPickle)
+[![pod: v0.0.4](http://img.shields.io/badge/pod-v0.0.4-yellow.svg)](http://eggbox.fantomfactory.org/pods/afPickle)
 [![Licence: ISC](http://img.shields.io/badge/licence-ISC-blue.svg)](https://choosealicense.com/licenses/isc/)
 
 ## Overview
 
+*Pickle is a support library that aids Alien-Factory in the development of other libraries, frameworks and applications. Though you are welcome to use it, you may find features are missing and the documentation incomplete.*
+
 A simple API that pickles Plain Old Fantom Objects to and from strings.
 
-Pickle is a drop-in replacement for the standard Fantom serialisation framework. It fixes many bugs, adds new features, and in general, *just works!*
+Pickle is a drop-in replacement for the standard [Fantom serialisation framework](https://fantom.org/doc/docLang/Serialization.html). It fixes many bugs, adds new features, and in general, *just works!*
 
-Pickle enhancements:
+Pickle only enhancements:
 
 * Pretty printing is event prettier (and enabled by default).
-* Pickled objects may specify pods to automatically use in `using` statements - to cut down on file size.
-* Works in Java AND Javascript.
+* Object creation may be handed off to a dedicated func via new `makeObjFn` option.
+* Pickled objects may omit `null` values via new `skipNulls` option.
+* Pickled objects may emit `using` statements via new `usings` option, to reduce verbosity and cut down file size.
+* Fully tested in Java AND Javascript.
 
 
 Pickle fixes the following:
@@ -61,4 +65,98 @@ Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org
         Str name := "Rick"
     }
     
+
+## Usage
+
+Pickle is a drop-in replacement for the standard [Fantom serialisation framework](https://fantom.org/doc/docLang/Serialization.html). Pickle is essentially one class with a `read` method and a `write` method for pickling your objects. Both methods may take an options Map to alter their behaviour.
+
+### Read Options
+
+#### makeArgs
+
+A List of arguments that passed to the root object's make constructor via `Type.make`. These arguments may be passed *in addition* to a trailing it-block arg.
+
+    Pickle.readObj(str, [
+        "makeArgs" : Str["green"]
+    ])
+    
+    ...
+    
+    class Gerkin {
+        Str name
+        Str colour
+    
+        new make(Str colour, |This| f) {
+            f(this)
+            this.colour = colour
+        }
+    }
+    
+
+Default is `null`.
+
+#### makeObjFn
+
+All object creation may be delegated to a dedicated function.
+
+    Pickle.readObj(str, [
+        "makeObjFn" : |Type type, Field:Obj? fieldVals->Obj?| {
+            // BeanBuilder auto selects an appropiate ctor regardless of name
+            afBeanUtils::BeanBuilder.build(type, vals)
+        }
+    ])
+    
+
+Default is `null`.
+
+### Write Options
+
+#### indent
+
+May be an `Int` or a `Str`. `Int` specifies the number of spaces to indent each level while a `Str` specifies the actual indent. This makes the follow two examples identical.
+
+    str1 := Pickle.writeObj(obj, ["indent" : 2])
+    
+    str2 := Pickle.writeObj(obj, ["indent" : "  "])
+    
+
+Indenting / pretty printing is on by default, becasue you're creating a *human readable* document - if that's not your intent, consider using some other `b1n4ry` serialisation instead!
+
+Default is `"\t"`.
+
+#### skipDefaults
+
+Specifies if we should skip fields at their default values.  Field values are compared according to the `equals` method.
+
+Pickling with `skipDefaults` requires a little more overhead as a default value of each type instance needs to be created for comparison. Consider using `skipNulls` instead.
+
+Default is `false`.
+
+#### skipErrors
+
+Specifies if we should skip objects which aren't serializable. If `true` then `null` is output with an accompanying comment.
+
+Default is `false`.
+
+#### skipNulls
+
+Specifies if we should skip fields with `null` values. `null` is a common default value and rarely adds value to a serialised document.
+
+Default is `false`.
+
+#### usings
+
+List of pod names that are emitted in `using` statements at the top of the serialised document. Types from said pods are then emitted with their basic names, not their qualified names.
+
+This often makes the serialised documents smaller, less verbose, and easier to read.
+
+    Pickle.writeObj(Str:Int[:])
+      // --> [sys::Str:sys::Int][:]
+    
+    Pickle.writeObj(Str:Int[:], ["usings":["sys"]])
+      // --> using sys
+      //     [Str:Int][:]
+    
+
+Default is `Str[,]`.
 
