@@ -5,10 +5,12 @@ class Build : BuildPod {
 	new make() {
 		podName = "afPickle"
 		summary = "Pickles Fantom objects to and from strings"
-		version = Version("0.0.2")
+		version = Version("0.0.3")
 
 		meta = [
 			"pod.dis"		: "Pickle",
+			"repo.tags"		: "system",
+			"repo.public"	: "true",
 		]
 
 		depends = [
