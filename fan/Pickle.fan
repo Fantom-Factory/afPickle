@@ -1,28 +1,24 @@
 
-** pickles Plain Old Fantom Objects to and from strings.
+** Pickles Fantom objects to and from strings.
 @Js class Pickle {
 	
-	** Read a serialized object from the stream according to
-	** the Fantom [serialization format]`docLang::Serialization`.
-	** Throw IOErr or ParseErr on error.  This method may consume
-	** bytes/chars past the end of the serialized object (we may
-	** want to add a "full stop" token at some point to support
-	** compound object streams).
+	** Read a pickled object from a string
+	** according to the Fantom [serialization format]`docLang::Serialization`.
 	**
-	** The options may be used to specify additional decoding
-	** logic:
-	**   - "makeArgs": Obj[] arguments to pass to the root
-	**     object's make constructor via 'Type.make'
+	** Options may contain:
+	**  - '"makeArgs"' - 'Obj[]' - args to pass to the root object's ctor
+	**  - '"makeObjFn"' - '|Type type, Field:Obj? fieldVals->Obj?|' - object creation func.
+	** 
+	** See docs for a full explanation of all options.
 	static Obj? readObj(Str str, [Str:Obj]? options := null) {
 		readObjFromIn(str.in, options)
 	}
 
-	** A stream version of 'readObj'.
+	** A stream version of `readObj`.
 	native static Obj? readObjFromIn(InStream in, [Str:Obj]? options := null)
 
-	** Write a serialized object to a string according to
-	** the Fantom [serialization format]`docLang::Serialization`.
-	** Throw IOErr on error.
+	** Pickles an object to a string 
+	** according to the Fantom [serialization format]`docLang::Serialization`.
 	**
 	** The options may be used to specify the format of the output:
 	**   - "indent": Int specifies how many spaces to indent
@@ -36,13 +32,15 @@
 	**   - "usings": List of strings that specify pod names to use, 
 	**     example: '["usings":["sys", "afPickle"]]'
 	**     Default is an empty list.
+	** 
+	** See docs for a full explanation of all options.
 	static Str writeObj(Obj? obj, [Str:Obj]? options := null) {
 		str := StrBuf()
 		writeObjToOut(str.out, obj, options)
 		return str.toStr
 	}
 	
-	** A stream version of 'writeObj'.
+	** A stream version of `writeObj`.
 	native static Void writeObjToOut(OutStream out, Obj? obj, [Str:Obj]? options := null)
 	
 }

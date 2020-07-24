@@ -191,42 +191,52 @@ public class ObjDecoder {
 		// read fields/collection into toSet/toAdd
 		readComplexFields(t, toSet, toAdd);
 
-		// get the make constructor
-		Method makeCtor = t.method("make", false);
-		if (makeCtor == null || !makeCtor.isPublic())
-			throw err("Missing public constructor " + t.qname() + ".make", line);
-
-		// get argument lists
-		List args = null;
-		if (root && options != null && options.get("makeArgs") != null)
-			args = new List(Sys.ObjType).addAll((List)options.get("makeArgs"));
-
-		// construct object
 		Object obj = null;
-		boolean setAfterCtor = true;
-		try {
-			// if last parameter is an function then pass toSet
-			// as an it-block for setting the fields
-			Param p = (Param)makeCtor.params().last();
-			if (p != null && p.type().fits(Sys.FuncType)) {
-				if (args == null) args = new List(Sys.ObjType);
-				args.add(Field.makeSetFunc(toSet));
-				setAfterCtor = false;
+
+		if (options != null && options.get("makeObjFn") != null) {
+			
+			// delegate to dedicated obj construction func
+			Func makeObjFn = (Func) options.get("makeObjFn");
+			obj = makeObjFn.call(t, toSet);
+
+		} else {
+		
+			// get the make constructor
+			Method makeCtor = t.method("make", false);
+			if (makeCtor == null || !makeCtor.isPublic())
+				throw err("Missing public constructor " + t.qname() + ".make", line);
+	
+			// get argument lists
+			List args = null;
+			if (root && options != null && options.get("makeArgs") != null)
+				args = new List(Sys.ObjType).addAll((List)options.get("makeArgs"));
+	
+			// construct object
+			boolean setAfterCtor = true;
+			try {
+				// if last parameter is an function then pass toSet
+				// as an it-block for setting the fields
+				Param p = (Param)makeCtor.params().last();
+				if (p != null && p.type().fits(Sys.FuncType)) {
+					if (args == null) args = new List(Sys.ObjType);
+					args.add(Field.makeSetFunc(toSet));
+					setAfterCtor = false;
+				}
+	
+				// invoke make to construct object
+				obj = makeCtor.callList(args);
 			}
-
-			// invoke make to construct object
-			obj = makeCtor.callList(args);
-		}
-		catch (Throwable e) {
-			throw err("Cannot make " + t + ": " + e, line, e);
-		}
-
-		// set fields (if not passed to ctor as it-block)
-		if (setAfterCtor && toSet.size() > 0) {
-			Iterator it = toSet.pairsIterator();
-			while (it.hasNext()) {
-				Entry e = (Entry)it.next();
-				complexSet(obj, (Field)e.getKey(), e.getValue(), line);
+			catch (Throwable e) {
+				throw err("Cannot make " + t + ": " + e, line, e);
+			}
+	
+			// set fields (if not passed to ctor as it-block)
+			if (setAfterCtor && toSet.size() > 0) {
+				Iterator it = toSet.pairsIterator();
+				while (it.hasNext()) {
+					Entry e = (Entry)it.next();
+					complexSet(obj, (Field)e.getKey(), e.getValue(), line);
+				}
 			}
 		}
 

@@ -50,9 +50,9 @@ afPickle_ObjEncoder.prototype.writeObj = function(obj) {
 	}
 
 	var t = typeof obj;
-	if (t === "boolean") { this.w(obj.toString()); return; }
-	if (t === "number")	{ this.w(obj.toString()); return; }
-	if (t === "string")	{ this.wStrLiteral(obj.toString(), '"'); return; }
+	if (t === "boolean")	{ this.w(obj.toString()); return; }
+	if (t === "number")		{ this.w(obj.toString()); return; }
+	if (t === "string")		{ this.wStrLiteral(obj.toString(), '"'); return; }
 
 	var f = obj.$fanType;
 	if (f === fan.sys.Float.$type)	 { fan.sys.Float.encode(obj, this); return; }
