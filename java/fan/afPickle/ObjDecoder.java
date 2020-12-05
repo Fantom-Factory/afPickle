@@ -29,9 +29,11 @@ public class ObjDecoder {
 	 * Construct for input stream.
 	 */
 	public ObjDecoder(InStream in, Map options) {
-		tokenizer = new Tokenizer(in);
 		this.options = options;
-		consume();
+		if (in != null) {
+			tokenizer = new Tokenizer(in);
+			consume();
+		}
 	}
 
 //////////////////////////////////////////////////////////////////////////
@@ -42,6 +44,8 @@ public class ObjDecoder {
 	 * Read an object from the stream.
 	 */
 	public final Object readObj() {
+		if (tokenizer == null)
+			return null;
 		readHeader();
 		return readObj(null, null, true);
 	}

@@ -25,8 +25,13 @@
 		
 		fog = writeObj(Str:Int[:])
 		verifyEq(fog, "[sys::Str:sys::Int][:]")
+
+		fog = writeObj(null)
+		verifyEq(fog, "null")
+
+		verifyEq(Pickle.readObj(null), null)
 	}
-	
+
 	Str writeObj(Obj? obj) {
 		Pickle.writeObj(obj)
 	}

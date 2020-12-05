@@ -4,19 +4,21 @@
  * outputs tokens for the Fantom serialization grammar.
  */
 function afPickle_Tokenizer(input) {
-	this.input = null;	 // input stream
-	this.type	= null;	 // current Token type constant
-	this.val	 = null;	 // String for id, Obj for literal
-	this.line	= 1;			// current line number
-	this.$undo = null;	 // if we've pushed back a token
-	this.cur	 = 0;			// current char
-	this.curt	= 0;			// current charMap type
-	this.peek	= 0;			// next char
-	this.peekt = 0;			// next charMap type
+	this.input	= null;		// input stream
+	this.type	= null;		// current Token type constant
+	this.val	= null;		// String for id, Obj for literal
+	this.line	= 1;		// current line number
+	this.$undo	= null;		// if we've pushed back a token
+	this.cur	= 0;		// current char
+	this.curt	= 0;		// current charMap type
+	this.peek	= 0;		// next char
+	this.peekt	= 0;		// next charMap type
 
-	this.input = input;
-	this.consume();
-	this.consume();
+	if (input != null) {
+		this.input	= input;
+		this.consume();
+		this.consume();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

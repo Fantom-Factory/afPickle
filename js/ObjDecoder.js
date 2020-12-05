@@ -3,12 +3,13 @@
  * ObjDecoder parses an object tree from an input stream.
  */
 function afPickle_ObjDecoder(input, options) {
-	this.tokenizer = new afPickle_Tokenizer(input);
-	this.options = options;
-	this.curt = null;
-	this.usings = [];
-	this.numUsings = 0;
-	this.consume();
+	this.tokenizer	= new afPickle_Tokenizer(input);
+	this.options	= options;
+	this.curt		= null;
+	this.usings		= [];
+	this.numUsings	= 0;
+	if (input != null)
+		this.consume();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -19,6 +20,8 @@ function afPickle_ObjDecoder(input, options) {
  * Read an object from the stream.
  */
 afPickle_ObjDecoder.prototype.readObj = function() {
+	if (this.tokenizer.input == null)
+		return null;
 	this.readHeader();
 	return this.$readObj(null, null, true);
 }

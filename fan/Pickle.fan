@@ -12,12 +12,12 @@
 	**    Default is 'null'.
 	** 
 	** See docs for a full explanation of all options.
-	static Obj? readObj(Str str, [Str:Obj]? options := null) {
-		readObjFromIn(str.in, options)
+	static Obj? readObj(Str? str, [Str:Obj]? options := null) {
+		readObjFromIn(str?.in, options)
 	}
 
 	** A stream version of [readObj()]`Pickle.readObj`.
-	native static Obj? readObjFromIn(InStream in, [Str:Obj]? options := null)
+	native static Obj? readObjFromIn(InStream? in, [Str:Obj]? options := null)
 
 	** Pickles an object to a string 
 	** according to the Fantom [serialization format]`docLang::Serialization`.
