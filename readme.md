@@ -1,8 +1,8 @@
-# Pickle v0.0.4
+# Pickle v1.0.0
 ---
 
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](https://fantom-lang.org/)
-[![pod: v0.0.4](http://img.shields.io/badge/pod-v0.0.4-yellow.svg)](http://eggbox.fantomfactory.org/pods/afPickle)
+[![pod: v1.0.0](http://img.shields.io/badge/pod-v1.0.0-yellow.svg)](http://eggbox.fantomfactory.org/pods/afPickle)
 [![Licence: ISC](http://img.shields.io/badge/licence-ISC-blue.svg)](https://choosealicense.com/licenses/isc/)
 
 ## Overview
@@ -28,6 +28,10 @@ Pickle fixes the following:
 * [@2644](https://fantom.org/forum/topic/2644) - Optimised serialisation when using the `skipDefaults` option.
 
 
+The Pickle source code mostly **IS** the standard *Fantom serialisation framework*! The framework has been liberated into its own library to guard against it being [deleted from the Fantom code base](https://fantom.org/forum/topic/2758#c3) and to make much needed updates and adjustments.
+
+Pickle contains native implementations for both Java and Javascript.
+
 ## <a name="Install"></a>Install
 
 Install `Pickle` with the Fantom Pod Manager ( [FPM](http://eggbox.fantomfactory.org/pods/afFpm) ):
@@ -40,7 +44,7 @@ Or install `Pickle` with [fanr](https://fantom.org/doc/docFanr/Tool.html#install
 
 To use in a [Fantom](https://fantom-lang.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afPickle 0.0"]
+    depends = ["sys 1.0", ..., "afPickle 1.0"]
 
 ## <a name="documentation"></a>Documentation
 

@@ -1,6 +1,10 @@
 
-v0.0
+v1.0
 ****
+
+v1.0.0
+======
+ - Chg: 'Pickle.readObj()' may now take a 'null' string for API convenience.
 
 v0.0.4
 ======
