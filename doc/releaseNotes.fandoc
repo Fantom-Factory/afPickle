@@ -1,16 +1,21 @@
 
-v1.0
+v1.0 [#v1.0]
 ****
 
-v1.0.2
+v1.0.4 [#v1.0.4]
+======
+ - New: Allow a string of *space separated values* for the 'using' option.
+ - Chg: Depreacted the 'usings' option in favour of the a 'using' option - to better match Fantom syntax.
+
+v1.0.2 [#v1.0.2]
 ======
  - Chg: Recompiled to remove the 'sourceMappingURL' comment from the Fantom JS.
 
-v1.0.0
+v1.0.0 [#v1.0.0]
 ======
  - Chg: 'Pickle.readObj()' may now take a 'null' string for API convenience.
 
-v0.0.4
+v0.0.4 [#v0.0.4]
 ======
  - New: First public release - base code liberated from core Fantom serialisation framework.
 

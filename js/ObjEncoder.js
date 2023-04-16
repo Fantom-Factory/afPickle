@@ -11,8 +11,10 @@ function afPickle_ObjEncoder(out, options) {
 	this.skipNulls		= false;
 	this.curFieldType	= null;
 	this.defaultObjs	= null;
-	this.usings			= fan.sys.List.make(fan.sys.Str.$type, []);
+	this.usings			= null;
+
 	if (options != null) this.initOptions(options);
+	else this.usings	= fan.sys.List.make(fan.sys.Str.$type, []);
 
 	if (this.usings.size() > 0) {
 		var that = this;
@@ -328,9 +330,18 @@ afPickle_ObjEncoder.prototype.initOptions = function(options) {
 	if (this.skipDefaults)
 		this.defaultObjs = {}
 
-	if (options.containsKey("usings")) {
+	// "usings" is legacy, prefer "using" instead
+	if (options.containsKey("usings"))
 		this.usings = options.get("usings");
-		if (this.usings == null)
-			this.usings = fan.sys.List.make(fan.sys.Str.$type, []);
+
+	if (options.containsKey("using")) {
+		var using = options.get("using");
+		if (fan.sys.ObjUtil.is(using, fan.sys.List.$type))
+			this.usings = using;
+		else if (using != null && fan.sys.Str.trimToNull(using) != null)
+			this.usings = fan.sys.Str.splitws(using);
 	}
+
+	if (this.usings == null)
+		this.usings = fan.sys.List.make(fan.sys.Str.$type, []);
 }

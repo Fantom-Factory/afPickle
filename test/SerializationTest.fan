@@ -722,7 +722,7 @@ class SerializationTest : Test {
 	}
 
 	Void verifyPrettyPrinting(Obj obj, Str expected) {
-		opts := ["indent":2, "skipDefaults":true, "usings":null]
+		opts := ["indent":2, "skipDefaults":true, "using":null]
 		actual := pickleWrite(obj, opts)
 //echo("================")
 //echo(actual)

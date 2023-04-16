@@ -29,8 +29,8 @@
 	**    Default is 'false'.
 	**  - "skipErrors" - 'Bool' - skip objects which aren't serializable.
 	**    Default is 'false'.
-	**  - "usings" - 'Str[]' - List of pod names to emit in using statements, 
-	**    '["usings":["sys", "afPickle"]]'
+	**  - "using" - 'Str[]' - List of pod names to emit in using statements, 
+	**    '["using":["sys", "afPickle"]]'
 	**    Default is 'null'.
 	** 
 	** See docs for a full explanation of all options.

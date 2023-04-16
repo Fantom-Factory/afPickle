@@ -30,7 +30,8 @@ public class ObjEncoder {
 	public ObjEncoder(OutStream out, Map options) {
 		this.out = out;
 		if (options != null) initOptions(options);
-		
+		else usings = List.make(Sys.StrType, new String[]{});
+	
 		if (usings.size() > 0) {
 			for (Object using : usings.toArray()) {
 				out.writeChars("using ").writeChars((String) using).writeChar('\n');
@@ -190,8 +191,7 @@ public class ObjEncoder {
 
 	static final FuncType eachIteratorType = new FuncType(new Type[] { Sys.ObjType }, Sys.VoidType);
 
-	class EachIterator extends Func.Indirect1
-	{
+	class EachIterator extends Func.Indirect1 {
 		EachIterator (boolean first) { super(eachIteratorType); this.first = first; }
 		public Object call(Object obj) {
 			if (first) { w('\n').wIndent().w('{').w('\n'); level++; first = false; }
@@ -350,6 +350,15 @@ public class ObjEncoder {
 		usings			= (List)	options.get("usings",		usings);
 		if (skipDefaults)
 			defaultObjs = new HashMap();
+		if (usings == null) {
+			// "usings" is legacy, prefer "using" instead
+			Object using = (Object)	options.get("using",		usings);
+			if (using instanceof List)
+				usings = (List) using;
+			else
+			if (using != null && FanStr.trimToNull(using.toString()) != null)
+				usings = FanStr.splitws(using.toString());
+		}
 		if (usings == null)
 			usings		= List.make(Sys.StrType, new String[]{});
 	}
@@ -376,5 +385,5 @@ public class ObjEncoder {
 	boolean		skipNulls		= false;
 	Type		curFieldType;
 	HashMap		defaultObjs;
-	List		usings			= List.make(Sys.StrType, new String[]{});
+	List		usings;
 }
