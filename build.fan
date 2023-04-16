@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afPickle"
 		summary = "Pickles Fantom objects to and from strings"
-		version = Version("1.0.3")
+		version = Version("1.0.4")
 
 		meta = [
 			"pod.dis"		: "Pickle",
@@ -25,7 +25,7 @@ class Build : BuildPod {
 		resDirs		= [`doc/`]
 		jsDirs		= [`js/`]
 		javaDirs	= [`java/fan/afPickle/`]
-		
+	
 		meta["afBuild.testPods"]	= "concurrent"
 	}
 }

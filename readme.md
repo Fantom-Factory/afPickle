@@ -1,11 +1,11 @@
-# Pickle v1.0.2
+# Pickle v1.0.4
 ---
 
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](https://fantom-lang.org/)
-[![pod: v1.0.2](http://img.shields.io/badge/pod-v1.0.2-yellow.svg)](http://eggbox.fantomfactory.org/pods/afPickle)
+[![pod: v1.0.4](http://img.shields.io/badge/pod-v1.0.4-yellow.svg)](http://eggbox.fantomfactory.org/pods/afPickle)
 [![Licence: ISC](http://img.shields.io/badge/licence-ISC-blue.svg)](https://choosealicense.com/licenses/isc/)
 
-## Overview
+## <a name="overview"></a>Overview
 
 A simple API that pickles Plain Old Fantom Objects to and from strings.
 
@@ -16,7 +16,7 @@ Pickle only enhancements:
 * Pretty printing is event prettier (and enabled by default).
 * Object creation may be handed off to a dedicated func via new `makeObjFn` option.
 * Pickled objects may omit `null` values via new `skipNulls` option.
-* Pickled objects may emit `using` statements via new `usings` option, to reduce verbosity and cut down file size.
+* Pickled objects may emit `using` statements via new `using` option, to reduce verbosity and cut down file size.
 * Fully tested in Java AND Javascript.
 
 
@@ -50,7 +50,7 @@ To use in a [Fantom](https://fantom-lang.org/) project, add a dependency to `bui
 
 Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org/pods/afPickle/) - the Fantom Pod Repository.
 
-## Quickstart
+## <a name="quickstart"></a>Quickstart
 
     str := Pickle.writeObj(Gerkin())
       // -->
@@ -68,13 +68,13 @@ Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org
     }
     
 
-## Usage
+## <a name="usage"></a>Usage
 
 Pickle is a drop-in replacement for the standard [Fantom serialisation framework](https://fantom.org/doc/docLang/Serialization.html). Pickle is essentially one class with a `read` method and a `write` method for pickling your objects. Both methods may take an options Map to alter their behaviour.
 
-### Read Options
+### <a name="readOptions"></a>Read Options
 
-#### makeArgs
+#### <a name="makeArgs"></a>makeArgs
 
 A List of arguments that passed to the root object's make constructor via `Type.make`. These arguments may be passed *in addition* to a trailing it-block arg.
 
@@ -97,7 +97,7 @@ A List of arguments that passed to the root object's make constructor via `Type.
 
 Default is `null`.
 
-#### makeObjFn
+#### <a name="makeObjFn"></a>makeObjFn
 
 All object creation may be delegated to a dedicated function.
 
@@ -111,9 +111,9 @@ All object creation may be delegated to a dedicated function.
 
 Default is `null`.
 
-### Write Options
+### <a name="writeOptions"></a>Write Options
 
-#### indent
+#### <a name="indent"></a>indent
 
 May be an `Int` or a `Str`. `Int` specifies the number of spaces to indent each level while a `Str` specifies the actual indent. This makes the follow two examples identical.
 
@@ -126,7 +126,7 @@ Indenting / pretty printing is on by default, becasue you're creating a *human r
 
 Default is `"\t"`.
 
-#### skipDefaults
+#### <a name="skipDefaults"></a>skipDefaults
 
 Specifies if we should skip fields at their default values.  Field values are compared according to the `equals` method.
 
@@ -134,19 +134,19 @@ Pickling with `skipDefaults` requires a little more overhead as a default value 
 
 Default is `false`.
 
-#### skipErrors
+#### <a name="skipErrors"></a>skipErrors
 
 Specifies if we should skip objects which aren't serializable. If `true` then `null` is output with an accompanying comment.
 
 Default is `false`.
 
-#### skipNulls
+#### <a name="skipNulls"></a>skipNulls
 
 Specifies if we should skip fields with `null` values. `null` is a common default value and rarely adds value to a serialised document.
 
 Default is `false`.
 
-#### usings
+#### <a name="using"></a>using
 
 List of pod names that are emitted in `using` statements at the top of the serialised document. Types from said pods are then emitted with their basic names, not their qualified names.
 
@@ -155,10 +155,18 @@ This often makes the serialised documents smaller, less verbose, and easier to r
     Pickle.writeObj(Str:Int[:])
       // --> [sys::Str:sys::Int][:]
     
-    Pickle.writeObj(Str:Int[:], ["usings":["sys"]])
+    Pickle.writeObj(Str:Int[:], ["using":["sys"]])
       // --> using sys
       //     [Str:Int][:]
     
+    
+    Pickle.writeObj(Str:Int[:], ["using":"sys xml"])
+      // --> using sys
+      // --> using xml
+      //     [Str:Int][:]
+    
+
+The `using` option may also be a string of *space separated values*.
 
 Default is `Str[,]`.
 
