@@ -73,8 +73,7 @@ afPickle_ObjEncoder.prototype.writeObj = function(obj) {
 		else
 			this.writeComplex(type, obj, ser);
 	}
-	else
-	{
+	else {
 		if (this.skipErrors) // NOTE: /* not playing nice in str - escape as unicode char */
 			this.w("null /\u002A Not serializable: ").w(type.qname()).w(" */");
 		else
@@ -105,8 +104,7 @@ afPickle_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
 		if (this.defaultObjs[defType] != undefined)
 			// use cached defObj if it exists
 			defObj = this.defaultObjs[defType];
-		else
-		{
+		else {
 			// else attempt to instantiate default object for type,
 			// this will fail if complex has it-block ctor
 			try { defObj = fan.sys.ObjUtil.$typeof(obj).make(); } catch(e) {}
@@ -291,10 +289,10 @@ afPickle_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
 			case '\f': this.w('\\').w('f'); break;
 			case '\t': this.w('\\').w('t'); break;
 			case '\\': this.w('\\').w('\\'); break;
-			case '"':	if (quote == '"') this.w('\\').w('"'); else this.w(c); break;
-			case '`':	if (quote == '`') this.w('\\').w('`'); else this.w(c); break;
-			case '$':	this.w('\\').w('$'); break;
-			default:	 this.w(c);
+			case '"' : if (quote == '"') this.w('\\').w('"'); else this.w(c); break;
+			case '`' : if (quote == '`') this.w('\\').w('`'); else this.w(c); break;
+			case '$' : this.w('\\').w('$'); break;
+			default  : this.w(c);
 		}
 	}
 	return this.w(quote);

@@ -87,7 +87,7 @@ afPickle_ObjDecoder.prototype.$readObj = function(curField, peekType, root) {
 	var line = this.tokenizer.line;
 	var t = (peekType != null) ? peekType : this.readType();
 
-	// type:		 type#
+	// type:	 type#
 	// simple:	 type(
 	// list/map: type[
 	// complex:	type || type{
@@ -127,8 +127,7 @@ afPickle_ObjDecoder.prototype.readSimple = function(line, t) {
 	this.consume(afPickle_Token.RPAREN, "Expected ) in simple");
 
 	// TEMP
-	try
-	{
+	try {
 		var script = "fan." + t.pod().$name() + "." + t.$name() + ".fromStr('" + str + "')";
 		var val = eval(script);
 		return val;
@@ -145,16 +144,13 @@ afPickle_ObjDecoder.prototype.readSimple = function(line, t) {
 //			throw err("Missing method: " + t.qname() + ".fromStr", line);
 //
 //		// invoke parse method to translate into instance
-//		try
-//		{
+//		try {
 //			return m.invoke(null, new Object[] { str });
 //		}
-//		catch (ParseErr.Val e)
-//		{
+//		catch (ParseErr.Val e) {
 //			throw ParseErr.make(e.err().msg() + " [Line " + line + "]").val;
 //		}
-//		catch (Throwable e)
-//		{
+//		catch (Throwable e) {
 //			throw ParseErr.make(e.toString() + " [Line " + line + "]", e).val;
 //		}
 }
@@ -164,9 +160,9 @@ afPickle_ObjDecoder.prototype.readSimple = function(line, t) {
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * complex := type [fields]
+ * complex	:= type [fields]
  * fields	:= "{" field (eos field)* "}"
- * field	 := name "=" obj
+ * field	:= name "=" obj
  */
 afPickle_ObjDecoder.prototype.readComplex = function(line, t, root) {
 	var toSet = fan.sys.Map.make(fan.sys.Field.$type, fan.sys.Obj.$type.toNullable());
@@ -197,8 +193,7 @@ afPickle_ObjDecoder.prototype.readComplex = function(line, t, root) {
 
 		// construct object
 		var setAfterCtor = true;
-		try
-		{
+		try {
 			// if last parameter is an function then pass toSet
 			// as an it-block for setting the fields
 			var p = makeCtor.params().last();
@@ -254,8 +249,7 @@ afPickle_ObjDecoder.prototype.readComplexFields = function(t, toSet, toAdd) {
 				this.readComplexSet(t, line, name, toSet);
 				readField = true;
 			}
-			else
-			{
+			else {
 				// pushback to reset on start of collection item
 				this.tokenizer.undo(this.tokenizer.type, this.tokenizer.val, this.tokenizer.line);
 				this.curt = this.tokenizer.reset(afPickle_Token.ID, name, line);
@@ -279,8 +273,7 @@ afPickle_ObjDecoder.prototype.readComplexSet = function(t, line, name, toSet) {
 	// parse value
 	var val = this.$readObj(field, null, false);
 
-	try
-	{
+	try {
 		// if const field, then make val immutable
 		if (field.isConst()) val = fan.sys.ObjUtil.toImmutable(val);
 	}
@@ -293,8 +286,7 @@ afPickle_ObjDecoder.prototype.readComplexSet = function(t, line, name, toSet) {
 }
 
 afPickle_ObjDecoder.prototype.complexSet = function(obj, field, val, line) {
-	try
-	{
+	try {
 		if (field.isConst())
 			field.set(obj, fan.sys.ObjUtil.toImmutable(val), false);
 		else
@@ -313,8 +305,7 @@ afPickle_ObjDecoder.prototype.readComplexAdd = function(t, line, toAdd) {
 }
 
 afPickle_ObjDecoder.prototype.complexAdd = function(t, obj, addMethod, val, line) {
-	try
-	{
+	try {
 		addMethod.invoke(obj, fan.sys.List.make(fan.sys.Obj.$type, [val]));
 	}
 	catch (ex) {
@@ -334,9 +325,9 @@ afPickle_ObjDecoder.prototype.readCollection = function(curField, t) {
 	this.consume(afPickle_Token.LBRACKET, "Expecting '['");
 
 	// if this could be a map type signature:
-	//		[qname:qname]
-	//		[qname:qname][]
-	//		[qname:qname][][] ...
+	//   [qname:qname]
+	//   [qname:qname][]
+	//   [qname:qname][][] ...
 	// or it could just be the type signature of
 	// of a embedded simple, complex, or list
 	var peekType = null;
@@ -406,14 +397,17 @@ afPickle_ObjDecoder.prototype.readList = function(of, first) {
 }
 
 /**
- * map		 := "[" mapPair ("," mapPair)* "]"
- * mapPair := obj ":" + obj
+ * map		:= "[" mapPair ("," mapPair)* "]"
+ * mapPair	:= obj ":" + obj
  */
 afPickle_ObjDecoder.prototype.readMap = function(mapType, firstKey) {
 	// create map
 	var map = mapType == null
 		? fan.sys.Map.make(fan.sys.Obj.$type, fan.sys.Obj.$type.toNullable())
 		: fan.sys.Map.make(mapType);
+
+	// we don't encode whether the original map was ordered or not,
+	// so assume it was to ensure map is still ordered after decode
 	map.ordered$(true);
 
 	// finish first pair
@@ -444,10 +438,10 @@ afPickle_ObjDecoder.prototype.readMap = function(mapType, firstKey) {
 
 /**
  * Figure out the type of the list:
- *	 1) if t was explicit then use it
- *	 2) if we have field typed as a list, then use its definition
- *	 3) if inferred is false, then drop back to list of Obj
- *	 4) If inferred is true then return null and we'll infer the common type
+ *  1) if t was explicit then use it
+ *  2) if we have field typed as a list, then use its definition
+ *  3) if inferred is false, then drop back to list of Obj
+ *  4) If inferred is true then return null and we'll infer the common type
  */
 afPickle_ObjDecoder.prototype.toListOfType = function(t, curField, infer) {
 	if (t != null) return t;
@@ -461,10 +455,10 @@ afPickle_ObjDecoder.prototype.toListOfType = function(t, curField, infer) {
 
 /**
  * Figure out the map type:
- *	 1) if t was explicit then use it (check that it was a map type)
- *	 2) if we have field typed as a map , then use its definition
- *	 3) if inferred is false, then drop back to Obj:Obj
- *	 4) If inferred is true then return null and we'll infer the common key/val types
+ *  1) if t was explicit then use it (check that it was a map type)
+ *  2) if we have field typed as a map , then use its definition
+ *  3) if inferred is false, then drop back to Obj:Obj
+ *  4) If inferred is true then return null and we'll infer the common key/val types
  */
 afPickle_ObjDecoder.prototype.toMapType = function(t, curField, infer) {
 	if (t instanceof fan.sys.MapType)
@@ -489,9 +483,9 @@ afPickle_ObjDecoder.prototype.toMapType = function(t, curField, infer) {
 
 /**
  * type		:= listSig | mapSig1 | mapSig2 | qname
- * listSig := type "[]"
- * mapSig1 := type ":" type
- * mapSig2 := "[" type ":" type "]"
+ * listSig	:= type "[]"
+ * mapSig1	:= type ":" type
+ * mapSig2	:= "[" type ":" type "]"
  *
  * Note: the mapSig2 with brackets is handled by the
  * method succinctly named readMapTypeOrCollection().
@@ -508,7 +502,7 @@ afPickle_ObjDecoder.prototype.readType = function(lbracket) {
 		var lbracket2 = this.curt == afPickle_Token.LBRACKET;
 		if (lbracket2) this.consume();
 		t = new fan.sys.MapType(t, this.readType(lbracket2));
-		if (lbracket2) this.consume(afPickle_Token.RBRACKET, "Expected closing ]");
+		if (lbracket2) this.consume(afPickle_Token.RBRACKET, "Expected closeing ']'");
 	}
 	while (this.curt == afPickle_Token.LRBRACKET) {
 		this.consume();

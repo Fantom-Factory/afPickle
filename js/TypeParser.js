@@ -1,21 +1,21 @@
 
 /**
  * TypeParser is used to parser formal type signatures which are
- * used in Sys.type() and in fcode for typeRefs.def.	Signatures
+ * used in Sys.type() and in fcode for typeRefs.def.  Signatures
  * are formated as (with arbitrary nesting):
  *
- *	 x::N
- *	 x::V[]
- *	 x::V[x::K]
- *	 |x::A, ... -> x::R|
+ *   x::N
+ *   x::V[]
+ *   x::V[x::K]
+ *   |x::A, ... -> x::R|
  */
 function afPickle_TypeParser(sig, checked) {
-	this.sig		 = sig;						// signature being parsed
-	this.len		 = sig.length;				// length of sig
-	this.pos		 = 0;						// index of cur in sig
-	this.cur		 = sig.charAt(this.pos);	// cur character; sig[pos]
+	this.sig		= sig;						// signature being parsed
+	this.len		= sig.length;				// length of sig
+	this.pos		= 0;						// index of cur in sig
+	this.cur		= sig.charAt(this.pos);		// cur character; sig[pos]
 	this.peek		= sig.charAt(this.pos+1);	// next character; sig[pos+1]
-	this.checked = checked;						// pass thru checked flag
+	this.checked	= checked;					// pass thru checked flag
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -181,11 +181,10 @@ afPickle_TypeParser.load = function(sig, checked) {
 	if (last != ']' && last != '|') {
 		var podName;
 		var typeName;
-		try
-		{
-			var colon = sig.indexOf("::");
-			podName	= sig.substring(0, colon);
-			typeName = sig.substring(colon+2);
+		try {
+			var colon	= sig.indexOf("::");
+			podName		= sig.substring(0, colon);
+			typeName	= sig.substring(colon+2);
 			if (podName.length == 0 || typeName.length == 0) throw fan.sys.Err.make("");
 		}
 		catch (err) {
@@ -203,8 +202,7 @@ afPickle_TypeParser.load = function(sig, checked) {
 	}
 
 	// we got our work cut out for us - create parser
-	try
-	{
+	try {
 		type = new afPickle_TypeParser(sig, checked).loadTop();
 		afPickle_TypeParser.cache[sig] = type;
 		return type;

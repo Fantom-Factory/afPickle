@@ -15,7 +15,7 @@ function afPickle_Tokenizer(input) {
 	this.peekt	= 0;		// next charMap type
 
 	if (input != null) {
-		this.input	= input;
+		this.input = input;
 		this.consume();
 		this.consume();
 	}
@@ -26,8 +26,8 @@ function afPickle_Tokenizer(input) {
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * Read the next token from the stream.	The token is
- * available via the 'type' and 'val' fields.	The line
+ * Read the next token from the stream. The token is
+ * available via the 'type' and 'val' fields. The line
  * of the current token is available in 'line' field.
  * Return the 'type' field or -1 if at end of stream.
  */
@@ -55,21 +55,21 @@ afPickle_Tokenizer.prototype.doNext = function() {
 
 		// symbol
 		switch (this.cur) {
-			case /* '+' */ 43:	this.consume(); return this.number(false);
-			case /* '-' */ 45:	this.consume(); return this.number(true);
-			case /* '"' */ 34:	return this.str();
-			case /* '\''*/ 39:	return this.ch();
-			case /* '`' */ 96:	return this.uri();
-			case /* '(' */ 40:	this.consume(); return afPickle_Token.LPAREN;
-			case /* ')' */ 41:	this.consume(); return afPickle_Token.RPAREN;
-			case /* ',' */ 44:	this.consume(); return afPickle_Token.COMMA;
-			case /* ';' */ 59:	this.consume(); return afPickle_Token.SEMICOLON;
-			case /* '=' */ 61:	this.consume(); return afPickle_Token.EQ;
+			case /* '+' */  43: this.consume(); return this.number(false);
+			case /* '-' */  45: this.consume(); return this.number(true);
+			case /* '"' */  34: return this.str();
+			case /* '\''*/  39: return this.ch();
+			case /* '`' */  96: return this.uri();
+			case /* '(' */  40: this.consume(); return afPickle_Token.LPAREN;
+			case /* ')' */  41: this.consume(); return afPickle_Token.RPAREN;
+			case /* ',' */  44: this.consume(); return afPickle_Token.COMMA;
+			case /* ';' */  59: this.consume(); return afPickle_Token.SEMICOLON;
+			case /* '=' */  61: this.consume(); return afPickle_Token.EQ;
 			case /* '{' */ 123: this.consume(); return afPickle_Token.LBRACE;
 			case /* '}' */ 125: this.consume(); return afPickle_Token.RBRACE;
-			case /* '#' */ 35:	this.consume(); return afPickle_Token.POUND;
-			case /* '?' */ 63:	this.consume(); return afPickle_Token.QUESTION;
-			case /* '.' */ 46:
+			case /* '#' */  35: this.consume(); return afPickle_Token.POUND;
+			case /* '?' */  63: this.consume(); return afPickle_Token.QUESTION;
+			case /* '.' */  46:
 				if (this.peekt == afPickle_Tokenizer.DIGIT) return this.number(false);
 				this.consume();
 				return afPickle_Token.DOT;
@@ -156,8 +156,7 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 		if (s != null) {
 			s += String.fromCharCode(this.cur);
 		}
-		else
-		{
+		else {
 			whole = whole*10 + (this.cur - 48);
 			wholeCount++;
 			if (wholeCount >= 18) { s = (neg) ? "-" : ""; s += whole; }
@@ -196,15 +195,15 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 	}
 
 	// check for suffixes
-	var floatSuffix	= false;
-	var decimalSuffix = false;
+	var floatSuffix		= false;
+	var decimalSuffix	= false;
 	var dur = -1;
 	if (/*'d'*/100 <= this.cur && this.cur <= 115/*'s'*/) {
-		if (this.cur == 110/*'n'*/ && this.peek == 115/*'s'*/) { this.consume(); this.consume(); dur = 1; }
-		if (this.cur == 109/*'m'*/ && this.peek == 115/*'s'*/) { this.consume(); this.consume(); dur = 1000000; }
-		if (this.cur == 115/*'s'*/ && this.peek == 101/*'e'*/) { this.consume(); this.consume(); if (this.cur != 99/*'c'*/) throw this.err("Expected 'sec' in Duration literal"); this.consume(); dur = 1000000000; }
-		if (this.cur == 109/*'m'*/ && this.peek == 105/*'i'*/) { this.consume(); this.consume(); if (this.cur != 110/*'n'*/) throw this.err("Expected 'min' in Duration literal"); this.consume(); dur = 60000000000; }
-		if (this.cur == 104/*'h'*/ && this.peek == 114/*'r'*/) { this.consume(); this.consume(); dur = 3600000000000; }
+		if (this.cur == 110/*'n'*/ && this.peek == 115/*'s'*/)	{ this.consume(); this.consume(); dur = 1; }
+		if (this.cur == 109/*'m'*/ && this.peek == 115/*'s'*/)	{ this.consume(); this.consume(); dur = 1000000; }
+		if (this.cur == 115/*'s'*/ && this.peek == 101/*'e'*/)	{ this.consume(); this.consume(); if (this.cur != 99/*'c'*/) throw this.err("Expected 'sec' in Duration literal"); this.consume(); dur = 1000000000; }
+		if (this.cur == 109/*'m'*/ && this.peek == 105/*'i'*/)	{ this.consume(); this.consume(); if (this.cur != 110/*'n'*/) throw this.err("Expected 'min' in Duration literal"); this.consume(); dur = 60000000000; }
+		if (this.cur == 104/*'h'*/ && this.peek == 114/*'r'*/)	{ this.consume(); this.consume(); dur = 3600000000000; }
 		if (this.cur == 100/*'d'*/ && this.peek == 97/*'a'*/)	{ this.consume(); this.consume(); if (this.cur != 121/*'y'*/) throw this.err("Expected 'day' in Duration literal"); this.consume(); dur = 86400000000000; }
 	}
 	if (this.cur == 102/*'f'*/ || this.cur == 70/*'F'*/) {
@@ -218,8 +217,7 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 
 	if (neg) whole = -whole;
 
-	try
-	{
+	try {
 		// float literal
 		if (floatSuffix) {
 			if (s == null)
@@ -236,8 +234,7 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 				this.val = fan.sys.Duration.make(num * dur);
 				return afPickle_Token.DURATION_LITERAL;
 			}
-			else
-			{
+			else {
 				this.val = fan.sys.Decimal.make(num);
 				return afPickle_Token.DECIMAL_LITERAL;
 			}
@@ -249,8 +246,7 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 			this.val = fan.sys.Duration.make(num*dur);
 			return afPickle_Token.DURATION_LITERAL;
 		}
-		else
-		{
+		else {
 			this.val = num;
 			return afPickle_Token.INT_LITERAL;
 		}
@@ -306,17 +302,17 @@ afPickle_Tokenizer.prototype.$hex = function(c) {
  * Parse a string literal afPickle_Token.
  */
 afPickle_Tokenizer.prototype.str = function() {
-	this.consume();	// opening quote
+	this.consume();		// opening quote
 	var s = "";
 	var loop = true;
 	while (loop) {
 		switch (this.cur) {
-			case 34/*'"'*/:	 this.consume(); loop = false; break;
-			case -1:					throw this.err("Unexpected end of string");
-			case 36/*'$'*/:	 throw this.err("Interpolated strings unsupported");
-			case 92/*'\\'*/:	s += this.escape(); break;
-			case 13/*'\r'*/:	s += '\n'; this.consume(); break;
-			default:					s += String.fromCharCode(this.cur); this.consume(); break;
+			case 34/*'"'*/	: this.consume(); loop = false; break;
+			case -1			: throw this.err("Unexpected end of string");
+			case 36/*'$'*/	: throw this.err("Interpolated strings unsupported");
+			case 92/*'\\'*/	: s += this.escape(); break;
+			case 13/*'\r'*/	: s += '\n'; this.consume(); break;
+			default			: s += String.fromCharCode(this.cur); this.consume(); break;
 		}
 	}
 	this.val = s;
@@ -339,8 +335,7 @@ afPickle_Tokenizer.prototype.ch = function() {
 	if (this.cur == 92/*'\\'*/) {
 		c = this.escape();
 	}
-	else
-	{
+	else {
 		c = this.cur;
 		this.consume();
 	}
@@ -363,16 +358,16 @@ afPickle_Tokenizer.prototype.escape = function() {
 
 	// check basics
 	switch (this.cur) {
-		case /*'b'*/	98:	 this.consume(); return '\b';
-		case /*'f'*/	102:	this.consume(); return '\f';
-		case /*'n'*/	110:	this.consume(); return '\n';
-		case /*'r'*/	114:	this.consume(); return '\r';
-		case /*'t'*/	116:	this.consume(); return '\t';
-		case /*'$'*/	36:	 this.consume(); return '$';
-		case /*'"'*/	34:	 this.consume(); return '"';
-		case /*'\''*/ 39:	 this.consume(); return '\'';
-		case /*'`'*/	96:	 this.consume(); return '`';
-		case /*'\\'*/ 92:	 this.consume(); return '\\';
+		case /*'b'*/  98: this.consume(); return '\b';
+		case /*'f'*/ 102: this.consume(); return '\f';
+		case /*'n'*/ 110: this.consume(); return '\n';
+		case /*'r'*/ 114: this.consume(); return '\r';
+		case /*'t'*/ 116: this.consume(); return '\t';
+		case /*'$'*/  36: this.consume(); return '$';
+		case /*'"'*/  34: this.consume(); return '"';
+		case /*'\''*/ 39: this.consume(); return '\'';
+		case /*'`'*/  96: this.consume(); return '`';
+		case /*'\\'*/ 92: this.consume(); return '\\';
 	}
 
 	// check for uxxxx
@@ -409,8 +404,7 @@ afPickle_Tokenizer.prototype.uri = function() {
 		if (this.cur == 92/*'\\'*/) {
 			s += this.escape();
 		}
-		else
-		{
+		else {
 			if (this.cur == 96/*'`'*/) { this.consume(); break; }
 			s += String.fromCharCode(this.cur);
 			this.consume();
@@ -440,7 +434,7 @@ afPickle_Tokenizer.prototype.skipCommentSL = function() {
 }
 
 /**
- * Skip a multi line /* comment.	Note unlike C/Java,
+ * Skip a multi line /* comment. Note unlike C/Java,
  * slash/star comments can be nested.
  */
 afPickle_Tokenizer.prototype.skipCommentML = function() {
@@ -473,9 +467,9 @@ afPickle_Tokenizer.prototype.err = function(msg) {
 
 /**
  * Consume the cur char and advance to next char in buffer:
- *	- updates cur, curt, peek, and peekt fields
- *	- updates the line and col count
- *	- end of file, sets fields to 0
+ *  - updates cur, curt, peek, and peekt fields
+ *  - updates the line and col count
+ *  - end of file, sets fields to 0
  */
 afPickle_Tokenizer.prototype.consume = function() {
 	// check for newline
@@ -488,10 +482,10 @@ afPickle_Tokenizer.prototype.consume = function() {
 	if (c == null) c = -1;
 
 	// roll cur to peek, and peek to new char
-	this.cur	 = this.peek;
+	this.cur	= this.peek;
 	this.curt	= this.peekt;
 	this.peek	= c;
-	this.peekt = 0 < c && c < 128 ? afPickle_Tokenizer.charMap[c] : afPickle_Tokenizer.ALPHA;
+	this.peekt	= 0 < c && c < 128 ? afPickle_Tokenizer.charMap[c] : afPickle_Tokenizer.ALPHA;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -510,9 +504,9 @@ afPickle_Tokenizer.prototype.undo = function(type, val, line) {
  * Reset the current token state.
  */
 afPickle_Tokenizer.prototype.reset = function(type, val, line) {
-	this.type = type;
+	this.type	= type;
 	this.val	= val;
-	this.line = line;
+	this.line	= line;
 	return type;
 }
 
@@ -526,14 +520,14 @@ afPickle_Tokenizer.ALPHA = 2;
 afPickle_Tokenizer.DIGIT = 3;
 
 // space characters; note \r is error in symbol()
-afPickle_Tokenizer.charMap[32 /*' '*/]	= afPickle_Tokenizer.SPACE;
+afPickle_Tokenizer.charMap[32 /*' '*/ ] = afPickle_Tokenizer.SPACE;
 afPickle_Tokenizer.charMap[10 /*'\n'*/] = afPickle_Tokenizer.SPACE;
 afPickle_Tokenizer.charMap[13 /*'\r'*/] = afPickle_Tokenizer.SPACE;
-afPickle_Tokenizer.charMap[9	/*'\t'*/] = afPickle_Tokenizer.SPACE;
+afPickle_Tokenizer.charMap[9  /*'\t'*/] = afPickle_Tokenizer.SPACE;
 
 // alpha characters
 for (var i=97/*'a'*/; i<=122/*'z'*/; ++i) afPickle_Tokenizer.charMap[i] = afPickle_Tokenizer.ALPHA;
-for (var i=65/*'A'*/; i<=90/*'Z'*/;	++i) afPickle_Tokenizer.charMap[i] = afPickle_Tokenizer.ALPHA;
+for (var i=65/*'A'*/; i<=90 /*'Z'*/; ++i) afPickle_Tokenizer.charMap[i] = afPickle_Tokenizer.ALPHA;
 afPickle_Tokenizer.charMap[95 /*'_'*/] = afPickle_Tokenizer.ALPHA;
 
 // digit characters
