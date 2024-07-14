@@ -54,7 +54,7 @@ fanx_ObjDecoder.prototype.readUsing = function()
   this.consume();
 
   var podName = this.consumeId("Expecting pod name");
-  var pod = Pod.find(podName, false);
+  var pod = sys.Pod.find(podName, false);
   if (pod == null) throw this.err("Unknown pod: " + podName);
   if (this.curt != fanx_Token.DOUBLE_COLON)
   {
@@ -149,7 +149,7 @@ fanx_ObjDecoder.prototype.readSimple = function(line, t)
   }
   catch (e)
   {
-    throw ParseErr.make(e.toString() + " [Line " + this.line + "]", e);
+    throw sys.ParseErr.make(e.toString() + " [Line " + this.line + "]", e);
   }
 
   // lookup the fromString method
@@ -164,13 +164,13 @@ fanx_ObjDecoder.prototype.readSimple = function(line, t)
 //    {
 //      return m.invoke(null, new Object[] { str });
 //    }
-//    catch (ParseErr.Val e)
+//    catch (sys.ParseErr.Val e)
 //    {
-//      throw ParseErr.make(e.err().msg() + " [Line " + line + "]").val;
+//      throw sys.ParseErr.make(e.err().msg() + " [Line " + line + "]").val;
 //    }
 //    catch (Throwable e)
 //    {
-//      throw ParseErr.make(e.toString() + " [Line " + line + "]", e).val;
+//      throw sys.ParseErr.make(e.toString() + " [Line " + line + "]", e).val;
 //    }
 }
 
@@ -185,8 +185,8 @@ fanx_ObjDecoder.prototype.readSimple = function(line, t)
  */
 fanx_ObjDecoder.prototype.readComplex = function(line, t, root)
 {
-  var toSet = Map.make(Field.type$, Obj.type$.toNullable());
-  var toAdd = List.make(Obj.type$.toNullable());
+  var toSet = sys.Map.make(sys.Field.type$, sys.Obj.type$.toNullable());
+  var toAdd = sys.List.make(sys.Obj.type$.toNullable());
 
   // read fields/collection into toSet/toAdd
   this.readComplexFields(t, toSet, toAdd);
@@ -199,7 +199,7 @@ fanx_ObjDecoder.prototype.readComplex = function(line, t, root)
   // get argument lists
   var args = null;
   if (root && this.options != null && this.options.get("makeArgs") != null)
-    args = List.make(Obj.type$).addAll(this.options.get("makeArgs"));
+    args = sys.List.make(sys.Obj.type$).addAll(this.options.get("makeArgs"));
 
   // construct object
   var obj = null;
@@ -209,10 +209,10 @@ fanx_ObjDecoder.prototype.readComplex = function(line, t, root)
     // if last parameter is an function then pass toSet
     // as an it-block for setting the fields
     var p = makeCtor.params().last();
-    if (p != null && p.type().fits(Func.type$))
+    if (p != null && p.type().fits(sys.Func.type$))
     {
-      if (args == null) args = List.make(Obj.type$);
-      args.add(Field.makeSetFunc(toSet));
+      if (args == null) args = sys.List.make(sys.Obj.type$);
+      args.add(sys.Field.makeSetFunc(toSet));
       setAfterCtor = false;
     }
 
@@ -298,7 +298,7 @@ fanx_ObjDecoder.prototype.readComplexSet = function(t, line, name, toSet)
   try
   {
     // if const field, then make val immutable
-    if (field.isConst()) val = ObjUtil.toImmutable(val);
+    if (field.isConst()) val = sys.ObjUtil.toImmutable(val);
   }
   catch (ex)
   {
@@ -314,7 +314,7 @@ fanx_ObjDecoder.prototype.complexSet = function(obj, field, val, line)
   try
   {
     if (field.isConst())
-      field.set(obj, ObjUtil.toImmutable(val), false);
+      field.set(obj, sys.ObjUtil.toImmutable(val), false);
     else
       field.set(obj, val);
   }
@@ -336,7 +336,7 @@ fanx_ObjDecoder.prototype.complexAdd = function(t, obj, addMethod, val, line)
 {
   try
   {
-    addMethod.invoke(obj, List.make(Obj.type$, [val]));
+    addMethod.invoke(obj, sys.List.make(sys.Obj.type$, [val]));
   }
   catch (ex)
   {
@@ -389,7 +389,7 @@ fanx_ObjDecoder.prototype.readCollection = function(curField, t)
   {
     this.consume();
     this.consume(fanx_Token.RBRACKET, "Expecting ']'");
-    return List.make(this.toListOfType(t, curField, false), []);
+    return sys.List.make(this.toListOfType(t, curField, false), []);
   }
 
   // handle special case of [:]
@@ -397,7 +397,7 @@ fanx_ObjDecoder.prototype.readCollection = function(curField, t)
   {
     this.consume();
     this.consume(fanx_Token.RBRACKET, "Expecting ']'");
-    return Map.make(this.toMapType(t, curField, false));
+    return sys.Map.make(this.toMapType(t, curField, false));
   }
 
   // read first list item or first map key
@@ -429,9 +429,9 @@ fanx_ObjDecoder.prototype.readList = function(of, first)
   this.consume(fanx_Token.RBRACKET, "Expected ']'");
 
   // infer type if needed
-  if (of == null) of = Type.common$(acc);
+  if (of == null) of = sys.Type.common$(acc);
 
-  return List.make(of, acc);
+  return sys.List.make(of, acc);
 }
 
 /**
@@ -442,8 +442,8 @@ fanx_ObjDecoder.prototype.readMap = function(mapType, firstKey)
 {
   // create map
   var map = mapType == null
-    ? Map.make(Obj.type$, Obj.type$.toNullable())
-    : Map.make(mapType);
+    ? sys.Map.make(sys.Obj.type$, sys.Obj.type$.toNullable())
+    : sys.Map.make(mapType);
 
   // we don't encode whether the original map was ordered or not,
   // so assume it was to ensure map is still ordered after decode
@@ -469,9 +469,9 @@ fanx_ObjDecoder.prototype.readMap = function(mapType, firstKey)
   if (mapType == null)
   {
     var size = map.size();
-    var k = Type.common$(map.keys().__values());
-    var v = Type.common$(map.vals().__values());
-    map.__type(new MapType(k, v));
+    var k = sys.Type.common$(map.keys().__values());
+    var v = sys.Type.common$(map.vals().__values());
+    map.__type(new sys.MapType(k, v));
   }
 
   return map;
@@ -490,10 +490,10 @@ fanx_ObjDecoder.prototype.toListOfType = function(t, curField, infer)
   if (curField != null)
   {
     var ft = curField.type().toNonNullable();
-    if (ft instanceof ListType) return ft.v;
+    if (ft instanceof sys.ListType) return ft.v;
   }
   if (infer) return null;
-  return Obj.type$.toNullable();
+  return sys.Obj.type$.toNullable();
 }
 
 /**
@@ -518,7 +518,7 @@ fanx_ObjDecoder.prototype.toMapType = function(t, curField, infer)
 
   if (fanx_ObjDecoder.defaultMapType == null)
     fanx_ObjDecoder.defaultMapType =
-      new MapType(Obj.type$, Obj.type$.toNullable());
+      new MapType(sys.Obj.type$, sys.Obj.type$.toNullable());
   return fanx_ObjDecoder.defaultMapType;
 }
 
@@ -590,7 +590,7 @@ fanx_ObjDecoder.prototype.readSimpleType = function()
   var typeName = this.consumeId("Expected type name");
 
   // resolve pod
-  var pod = Pod.find(n, false);
+  var pod = sys.Pod.find(n, false);
   if (pod == null) throw this.err("Pod not found: " + n, line);
 
   // resolve type
@@ -690,7 +690,7 @@ fanx_ObjDecoder.decode = function(s)
 
 fanx_ObjDecoder.err = function(msg, line)
 {
-  return IOErr.make(msg + " [Line " + line + "]");
+  return sys.IOErr.make(msg + " [Line " + line + "]");
 }
 
 fanx_ObjDecoder.defaultMapType = null;

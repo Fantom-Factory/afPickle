@@ -247,16 +247,16 @@ fanx_Tokenizer.prototype.number = function(neg)
     if (floatSuffix)
     {
       if (s == null)
-        this.val = Float.make(whole);
+        this.val = sys.Float.make(whole);
       else
-        this.val = Float.fromStr(s);
+        this.val = sys.Float.fromStr(s);
       return fanx_Token.FLOAT_LITERAL;
     }
 
     // decimal literal (or duration)
     if (decimalSuffix || floating)
     {
-      var num = (s == null) ? whole : Float.fromStr(s);
+      var num = (s == null) ? whole : sys.Float.fromStr(s);
       if (dur > 0)
       {
         this.val = Duration.make(num * dur);
@@ -264,7 +264,7 @@ fanx_Tokenizer.prototype.number = function(neg)
       }
       else
       {
-        this.val = Decimal.make(num);
+        this.val = sys.Decimal.make(num);
         return fanx_Token.DECIMAL_LITERAL;
       }
     }
@@ -314,11 +314,11 @@ var str = String.fromCharCode(this.cur);
 str += String.fromCharCode(this.cur);
     nibCount++;
     if (nibCount > 16) throw this.err("Hex literal too big");
-//    val = fan.sys.Int.shiftl(val, 4) + nib;
+//    val = sys.Int.shiftl(val, 4) + nib;
     this.consume();
   }
   //this.val = val;
-this.val = Int.fromStr(str, 16);
+this.val = sys.Int.fromStr(str, 16);
   return type;
 }
 

@@ -127,7 +127,7 @@ fanx_TypeParser.prototype.loadFunc = function()
   var ret = this.load();
   this.consume('|');
 
-  return new FuncType(params, ret);
+  return new sys.FuncType(params, ret);
 }
 
 fanx_TypeParser.prototype.loadBasic = function()
@@ -160,7 +160,7 @@ fanx_TypeParser.prototype.consumeId = function()
 fanx_TypeParser.prototype.isIdChar = function(ch)
 {
   if (ch == null) return false;
-  return Int.isAlphaNum(ch.charCodeAt(0)) || ch == '_';
+  return sys.Int.isAlphaNum(ch.charCodeAt(0)) || ch == '_';
 }
 
 fanx_TypeParser.prototype.consume = function(expected)
@@ -256,7 +256,7 @@ fanx_TypeParser.load = function(sig, checked)
 
 fanx_TypeParser.find = function(podName, typeName, checked)
 {
-  var pod = Pod.find(podName, checked);
+  var pod = sys.Pod.find(podName, checked);
   if (pod == null) return null;
   return pod.type(typeName, checked);
 }

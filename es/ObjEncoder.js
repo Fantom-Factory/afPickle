@@ -50,16 +50,16 @@ fanx_ObjEncoder.prototype.writeObj = function(obj)
   if (t === "string")  { this.wStrLiteral(obj.toString(), '"'); return; }
 
   var f = obj.fanType$;
-  if (f === Float.type$)   { Float.encode(obj, this); return; }
-  if (f === Decimal.type$) { Decimal.encode(obj, this); return; }
+  if (f === sys.Float.type$)   { sys.Float.encode(obj, this); return; }
+  if (f === sys.Decimal.type$) { sys.Decimal.encode(obj, this); return; }
 
   if (obj.literalEncode$)
   {
     obj.literalEncode$(this);
     return;
   }
-  var type = ObjUtil.typeof(obj);
-  var ser = type.facet(Serializable.type$, false);
+  var type = sys.ObjUtil.typeof(obj);
+  var ser = type.facet(sys.Serializable.type$, false);
   if (ser != null)
   {
     if (ser.simple())
@@ -72,7 +72,7 @@ fanx_ObjEncoder.prototype.writeObj = function(obj)
     if (this.skipErrors) // NOTE: /* not playing nice in str - escape as unicode char */
       this.w("null /\u002A Not serializable: ").w(type.qname()).w(" */");
     else
-      throw IOErr.make("Not serializable: " + type);
+      throw sys.IOErr.make("Not serializable: " + type);
   }
 }
 
@@ -82,7 +82,7 @@ fanx_ObjEncoder.prototype.writeObj = function(obj)
 
 fanx_ObjEncoder.prototype.writeSimple = function(type, obj)
 {
-  var str = ObjUtil.toStr(obj);
+  var str = sys.ObjUtil.toStr(obj);
   this.wType(type).w('(').wStrLiteral(str, '"').w(')');
 }
 
@@ -100,7 +100,7 @@ fanx_ObjEncoder.prototype.writeComplex = function(type, obj, ser)
   {
     // attempt to instantiate default object for type,
     // this will fail if complex has it-block ctor
-    try { defObj = ObjUtil.typeof(obj).make(); } catch(e) {}
+    try { defObj = sys.ObjUtil.typeof(obj).make(); } catch(e) {}
   }
 
   var fields = type.fields();
@@ -109,7 +109,7 @@ fanx_ObjEncoder.prototype.writeComplex = function(type, obj, ser)
     var f = fields.get(i);
 
     // skip static, transient, and synthetic (once) fields
-    if (f.isStatic() || f.isSynthetic() || f.hasFacet(Transient.type$))
+    if (f.isStatic() || f.isSynthetic() || f.hasFacet(sys.Transient.type$))
       continue;
 
     // get the value
@@ -119,7 +119,7 @@ fanx_ObjEncoder.prototype.writeComplex = function(type, obj, ser)
     if (defObj != null)
     {
       var defVal = f.get(defObj);
-      if (ObjUtil.equals(val, defVal)) continue;
+      if (sys.ObjUtil.equals(val, defVal)) continue;
     }
 
     // if first then open braces
@@ -152,13 +152,13 @@ fanx_ObjEncoder.prototype.writeCollectionItems = function(type, obj, first)
 {
   // lookup each method
   var m = type.method("each", false);
-  if (m == null) throw IOErr.make("Missing " + type.qname() + ".each");
+  if (m == null) throw sys.IOErr.make("Missing " + type.qname() + ".each");
 
   // call each(it)
   var enc = this;
   /*
-  var it  = Func.make(
-    List.make(Param.type$),
+  var it  = sys.Func.make(
+    sys.List.make(Param.type$),
     Void.type$,
     function(obj)
     {
@@ -178,7 +178,7 @@ fanx_ObjEncoder.prototype.writeCollectionItems = function(type, obj, first)
     return null;
   }
 
-  m.invoke(obj, List.make(Obj.type$, [it]));
+  m.invoke(obj, sys.List.make(sys.Obj.type$, [it]));
   return first;
 }
 
@@ -196,7 +196,7 @@ fanx_ObjEncoder.prototype.writeList = function(list)
 
   // figure out if we can use an inferred type
   var inferred = false;
-  if (this.curFieldType != null && (this.curFieldType instanceof ListType))
+  if (this.curFieldType != null && (this.curFieldType instanceof sys.ListType))
   {
     inferred = true;
   }
@@ -273,7 +273,7 @@ fanx_ObjEncoder.prototype.writeMap = function(map)
 
 fanx_ObjEncoder.prototype.isMultiLine = function(t)
 {
-  return t.pod() != Pod.sysPod$;
+  return t.pod() != sys.Pod.sysPod$;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -341,3 +341,17 @@ fanx_ObjEncoder.option = function(options, name, def)
   if (val == null) return def;
   return val;
 }
+
+// ListType and MapType are NOT exported
+// https://stackoverflow.com/questions/62937658/how-to-use-instanceof-with-a-class-which-is-not-defined-in-the-current-context
+/*
+fanx_fudgeInstaceOf(obj) {
+  const arr = [];
+
+  while (obj = Reflect.getPrototypeOf(obj)) {
+    arr.push(obj.constructor.name);
+  }  
+    
+  return arr;
+}
+*/
