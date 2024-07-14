@@ -229,7 +229,7 @@ fanx_Tokenizer.prototype.number = function(neg) {
 		if (decimalSuffix || floating) {
 			var num = (s == null) ? whole : sys.Float.fromStr(s);
 			if (dur > 0) {
-				this.val = Duration.make(num * dur);
+				this.val = sys.Duration.make(num * dur);
 				return fanx_Token.DURATION_LITERAL;
 			}
 			else {
@@ -241,7 +241,7 @@ fanx_Tokenizer.prototype.number = function(neg) {
 		// int literal (or duration)
 		var num = (s == null) ? whole : Math.floor(Float.fromStr(s, true));
 		if (dur > 0) {
-			this.val = Duration.make(num*dur);
+			this.val = sys.Duration.make(num*dur);
 			return fanx_Token.DURATION_LITERAL;
 		}
 		else {
