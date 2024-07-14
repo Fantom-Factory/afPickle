@@ -69,7 +69,7 @@ fanx_ObjEncoder.prototype.writeObj = function(obj)
   }
   else
   {
-    if (this.skipErrors) // NOTE: /* not playing nice in str - escape as unicode char
+    if (this.skipErrors) // NOTE: /* not playing nice in str - escape as unicode char */
       this.w("null /\u002A Not serializable: ").w(type.qname()).w(" */");
     else
       throw IOErr.make("Not serializable: " + type);
