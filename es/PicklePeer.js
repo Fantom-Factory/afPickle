@@ -10,7 +10,7 @@ class PicklePeer extends sys.Obj {
 
 	static writeObjToOut(output, obj, options) {
 		if (options === undefined) options = null;
-		new afPickle_ObjEncoder(output, options).writeObj(obj);
+		new ObjEncoder(output, options).writeObj(obj);
 	}
 }
 
