@@ -3,7 +3,7 @@
  * ObjDecoder parses an object tree from an input stream.
  */
 function afPickle_ObjDecoder(input, options) {
-	this.tokenizer	= new afPickle_Tokenizer(input);
+	this.tokenizer	= new Tokeniser(input);
 	this.options	= options;
 	this.curt		= null;
 	this.usings		= [];
