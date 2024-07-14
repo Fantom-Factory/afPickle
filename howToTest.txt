@@ -1,0 +1,6 @@
+
+
+ES:
+fpm run -t afPickle nodeJs::Main test -keep afPickle
+
+

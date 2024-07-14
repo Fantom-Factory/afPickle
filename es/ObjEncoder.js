@@ -5,12 +5,23 @@
 function fanx_ObjEncoder(out, options) {
 	this.out			= out;
 	this.level			= 0;
-	this.indent = 0;
+	this.indent			= "\t";
 	this.skipDefaults	= false;
 	this.skipErrors		= false;
 	this.skipNulls		= false;
 	this.curFieldType	= null;
+	this.defaultObjs	= null;
+	this.usings			= null;	
+
 	if (options != null) this.initOptions(options);
+	else this.usings	= sys.List.make(sys.Str.type$, []);
+
+	if (this.usings.size() > 0) {
+		this.usings.each((val) => {
+			this.w("using ").w(val).w("\n");
+		});
+		this.w("\n");
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,9 +93,16 @@ fanx_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
 	var first = true;
 	var defObj = null;
 	if (this.skipDefaults) {
-		// attempt to instantiate default object for type,
-		// this will fail if complex has it-block ctor
-		try { defObj = sys.ObjUtil.typeof(obj).make(); } catch(e) {}
+		var defType = sys.ObjUtil.typeof(obj).toNonNullable();
+		if (this.defaultObjs[defType] != undefined)
+			// use cached defObj if it exists
+			defObj = this.defaultObjs[defType];
+		else {
+			// else attempt to instantiate default object for type,
+			// this will fail if complex has it-block ctor
+			try { defObj = sys.ObjUtil.typeof(obj).make(); } catch(e) {}
+			this.defaultObjs[defType] = defObj;
+		}
 	}
 
 	var fields = type.fields();
@@ -104,8 +122,12 @@ fanx_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
 			if (sys.ObjUtil.equals(val, defVal)) continue;
 		}
 
+		// if skipping nulls
+		if (this.skipNulls && val == null)
+			continue;
+
 		// if first then open braces
-		if (first) { this.w('\n').wIndent().w('{').w('\n'); this.level++; first = false; }
+		if (first) { this.w(' ').w('{').w('\n'); this.level++; first = false; }
 
 		// field name =
 		this.wIndent().w(f.name()).w('=');
@@ -190,7 +212,6 @@ fanx_ObjEncoder.prototype.writeList = function(list) {
 	if (size == 0) { this.w("[,]"); return; }
 
 	// items
-	if (nl) this.w('\n').wIndent();
 	this.w('[');
 	this.level++;
 	for (var i=0; i<size; ++i) {
@@ -254,7 +275,9 @@ fanx_ObjEncoder.prototype.isMultiLine = function(t) {
 //////////////////////////////////////////////////////////////////////////
 
 fanx_ObjEncoder.prototype.wType = function(t) {
-	return this.w(t.signature());
+	return this.usings.contains(t.pod().name())
+		? this.w(t.signature().split(t.pod().name() + "::").join(""))
+		: this.w(t.signature());
 }
 
 fanx_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
@@ -279,8 +302,7 @@ fanx_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
 }
 
 fanx_ObjEncoder.prototype.wIndent = function() {
-	var num = this.level * this.indent;
-	for (var i=0; i<num; ++i) this.w(' ');
+	for (var i=0; i<this.level; ++i) this.w(this.indent);
 	return this;
 }
 
@@ -296,30 +318,34 @@ fanx_ObjEncoder.prototype.w = function(s) {
 //////////////////////////////////////////////////////////////////////////
 
 fanx_ObjEncoder.prototype.initOptions = function(options) {
-	this.indent = fanx_ObjEncoder.option(options, "indent", this.indent);
-	this.skipDefaults = fanx_ObjEncoder.option(options, "skipDefaults", this.skipDefaults);
-	this.skipErrors = fanx_ObjEncoder.option(options, "skipErrors", this.skipErrors);
-}
+	this.indent			= options.get("indent",			this.indent);
+	this.skipDefaults	= options.get("skipDefaults",	this.skipDefaults);
+	this.skipErrors		= options.get("skipErrors",		this.skipErrors);
+	this.skipNulls		= options.get("skipNulls",		this.skipNulls);
 
-fanx_ObjEncoder.option = function(options, name, def) {
-	var val = options.get(name);
-	if (val == null) return def;
-	return val;
-}
+	if (typeof this.indent == "number")
+		this.indent = " ".repeat(this.indent);
+	else
+		this.indent = this.indent.toString();
 
-// ListType and MapType are NOT exported
-// https://stackoverflow.com/questions/62937658/how-to-use-instanceof-with-a-class-which-is-not-defined-in-the-current-context
-/*
-fanx_fudgeInstaceOf(obj) {
-	const arr = [];
+	if (this.skipDefaults)
+		this.defaultObjs = {}
 
-	while (obj = Reflect.getPrototypeOf(obj)) {
-		arr.push(obj.constructor.name);
-	}  
-		
-	return arr;
+	// "usings" is legacy, prefer "using" instead
+	if (options.containsKey("usings"))
+		this.usings = options.get("usings");
+
+	if (options.containsKey("using")) {
+		var using = options.get("using");
+		if (sys.ObjUtil.is(using, sys.List.type$))
+			this.usings = using;
+		else if (using != null && sys.Str.trimToNull(using) != null)
+			this.usings = sys.Str.split(using);
+	}
+
+	if (this.usings == null)
+		this.usings = sys.List.make(sys.Str.type$, []);
 }
-*/
 
 
 

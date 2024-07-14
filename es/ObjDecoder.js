@@ -8,7 +8,8 @@ function fanx_ObjDecoder(input, options) {
 	this.curt		= null;
 	this.usings		= [];
 	this.numUsings	= 0;
-	this.consume();
+	if (input != null)
+		this.consume();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -19,6 +20,8 @@ function fanx_ObjDecoder(input, options) {
  * Read an object from the stream.
  */
 fanx_ObjDecoder.prototype.readObj = function() {
+	if (this.tokenizer.input == null)
+		return null;
 	this.readHeader();
 	return this.$readObj(null, null, true);
 }
@@ -164,47 +167,57 @@ fanx_ObjDecoder.prototype.readComplex = function(line, t, root) {
 
 	// read fields/collection into toSet/toAdd
 	this.readComplexFields(t, toSet, toAdd);
-
-	// get the make constructor
-	var makeCtor = t.method("make", false);
-	if (makeCtor == null || !makeCtor.isPublic())
-		throw this.err("Missing public constructor " + t.qname() + ".make", line);
-
-	// get argument lists
-	var args = null;
-	if (root && this.options != null && this.options.get("makeArgs") != null)
-		args = sys.List.make(sys.Obj.type$).addAll(this.options.get("makeArgs"));
-
-	// construct object
+	
 	var obj = null;
-	var setAfterCtor = true;
-	try {
-		// if last parameter is an function then pass toSet
-		// as an it-block for setting the fields
-		var p = makeCtor.params().last();
-		if (p != null && p.type().fits(sys.Func.type$)) {
-			if (args == null) args = sys.List.make(sys.Obj.type$);
-			args.add(sys.Field.makeSetFunc(toSet));
-			setAfterCtor = false;
+
+	if (this.options != null && this.options.get("makeObjFn") != null) {
+
+		// delegate to dedicated obj construction func
+		var makeObjFn = this.options.get("makeObjFn");
+		obj = makeObjFn(t, toSet);
+
+	} else {
+
+		// get the make constructor
+		var makeCtor = t.method("make", false);
+		if (makeCtor == null || !makeCtor.isPublic())
+			throw this.err("Missing public constructor " + t.qname() + ".make", line);
+
+		// get argument lists
+		var args = null;
+		if (root && this.options != null && this.options.get("makeArgs") != null)
+			args = sys.List.make(sys.Obj.type$).addAll(this.options.get("makeArgs") || []);
+
+		// construct object
+		var setAfterCtor = true;
+		try {
+			// if last parameter is an function then pass toSet
+			// as an it-block for setting the fields
+			var p = makeCtor.params().last();
+			if (p != null && p.type().fits(sys.Func.type$)) {
+				if (args == null) args = sys.List.make(sys.Obj.type$);
+				args.add(sys.Field.makeSetFunc(toSet));
+				setAfterCtor = false;
+			}
+
+			// invoke make to construct object
+			obj = makeCtor.callList(args);
+		}
+		catch (e) {
+			throw this.err("Cannot make " + t + ": " + e, line, e);
 		}
 
-		// invoke make to construct object
-		obj = makeCtor.callList(args);
-	}
-	catch (e) {
-		throw this.err("Cannot make " + t + ": " + e, line, e);
-	}
-
-	// set fields (if not passed to ctor as it-block)
-	if (setAfterCtor && toSet.size() > 0) {
-		var keys = toSet.keys();
-		for (var i=0; i<keys.size(); i++) {
-			var field = keys.get(i);
-			var val = toSet.get(field);
-			this.complexSet(obj, field, val, line);
+		// set fields (if not passed to ctor as it-block)
+		if (setAfterCtor && toSet.size() > 0) {
+			var keys = toSet.keys();
+			for (var i=0; i<keys.size(); i++) {
+				var field = keys.get(i);
+				var val = toSet.get(field);
+				this.complexSet(obj, field, val, line);
+			}
 		}
 	}
-
+	
 	// add
 	if (toAdd.size() > 0) {
 		var addMethod = t.method("add", false);
