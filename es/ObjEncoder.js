@@ -2,7 +2,7 @@
 /**
  * ObjEncoder serializes an object to an output stream.
  */
-function fanx_ObjEncoder(out, options) {
+function afPickle_ObjEncoder(out, options) {
 	this.out			= out;
 	this.level			= 0;
 	this.indent			= "\t";
@@ -28,10 +28,10 @@ function fanx_ObjEncoder(out, options) {
 // Static
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.encode = function(obj) {
+afPickle_ObjEncoder.encode = function(obj) {
 	var buf = StrBuf.make();
 	var out = new StrBufOutStream(buf);
-	new fanx_ObjEncoder(out, null).writeObj(obj);
+	new afPickle_ObjEncoder(out, null).writeObj(obj);
 	return buf.toStr();
 }
 
@@ -39,7 +39,7 @@ fanx_ObjEncoder.encode = function(obj) {
 // Write
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.writeObj = function(obj) {
+afPickle_ObjEncoder.prototype.writeObj = function(obj) {
 	if (obj == null) {
 		this.w("null");
 		return;
@@ -78,7 +78,7 @@ fanx_ObjEncoder.prototype.writeObj = function(obj) {
 // Simple
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.writeSimple = function(type, obj) {
+afPickle_ObjEncoder.prototype.writeSimple = function(type, obj) {
 	var str = sys.ObjUtil.toStr(obj);
 	this.wType(type).w('(').wStrLiteral(str, '"').w(')');
 }
@@ -87,7 +87,7 @@ fanx_ObjEncoder.prototype.writeSimple = function(type, obj) {
 // Complex
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
+afPickle_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
 	this.wType(type);
 
 	var first = true;
@@ -152,7 +152,7 @@ fanx_ObjEncoder.prototype.writeComplex = function(type, obj, ser) {
 // Collection (@collection)
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.writeCollectionItems = function(type, obj, first) {
+afPickle_ObjEncoder.prototype.writeCollectionItems = function(type, obj, first) {
 	// lookup each method
 	var m = type.method("each", false);
 	if (m == null) throw sys.IOErr.make("Missing " + type.qname() + ".each");
@@ -188,7 +188,7 @@ fanx_ObjEncoder.prototype.writeCollectionItems = function(type, obj, first) {
 // List
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.writeList = function(list) {
+afPickle_ObjEncoder.prototype.writeList = function(list) {
 	// get of type
 	var of = list.of();
 
@@ -228,7 +228,7 @@ fanx_ObjEncoder.prototype.writeList = function(list) {
 // Map
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.writeMap = function(map) {
+afPickle_ObjEncoder.prototype.writeMap = function(map) {
 	// get k,v type
 	var t = map.typeof();
 
@@ -266,7 +266,7 @@ fanx_ObjEncoder.prototype.writeMap = function(map) {
 	this.level--;
 }
 
-fanx_ObjEncoder.prototype.isMultiLine = function(t) {
+afPickle_ObjEncoder.prototype.isMultiLine = function(t) {
 	return t.pod() != sys.Pod.sysPod$;
 }
 
@@ -274,13 +274,13 @@ fanx_ObjEncoder.prototype.isMultiLine = function(t) {
 // Output
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.wType = function(t) {
+afPickle_ObjEncoder.prototype.wType = function(t) {
 	return this.usings.contains(t.pod().name())
 		? this.w(t.signature().split(t.pod().name() + "::").join(""))
 		: this.w(t.signature());
 }
 
-fanx_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
+afPickle_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
 	var len = s.length;
 	this.w(quote);
 	// NOTE: these escape sequences are duplicated in FanStr.toCode()
@@ -301,12 +301,12 @@ fanx_ObjEncoder.prototype.wStrLiteral = function(s, quote) {
 	return this.w(quote);
 }
 
-fanx_ObjEncoder.prototype.wIndent = function() {
+afPickle_ObjEncoder.prototype.wIndent = function() {
 	for (var i=0; i<this.level; ++i) this.w(this.indent);
 	return this;
 }
 
-fanx_ObjEncoder.prototype.w = function(s) {
+afPickle_ObjEncoder.prototype.w = function(s) {
 	var len = s.length;
 	for (var i=0; i<len; ++i)
 		this.out.writeChar(s.charCodeAt(i));
@@ -317,7 +317,7 @@ fanx_ObjEncoder.prototype.w = function(s) {
 // Options
 //////////////////////////////////////////////////////////////////////////
 
-fanx_ObjEncoder.prototype.initOptions = function(options) {
+afPickle_ObjEncoder.prototype.initOptions = function(options) {
 	this.indent			= options.get("indent",			this.indent);
 	this.skipDefaults	= options.get("skipDefaults",	this.skipDefaults);
 	this.skipErrors		= options.get("skipErrors",		this.skipErrors);
@@ -355,13 +355,13 @@ fanx_ObjEncoder.prototype.initOptions = function(options) {
 // sys.ListType and sys.MapType are NOT exported, so here are some workarounds
 
 // an alternative to 'obj instanceof ListType'
-fanx_ObjEncoder.prototype.isListType = function(obj) {
+afPickle_ObjEncoder.prototype.isListType = function(obj) {
 	if (obj == null) return false;
 	return obj.signature().endsWith("[]");
 }
 
 // an alternative to 'obj instanceof MapType'
-fanx_ObjEncoder.prototype.isMapType = function(obj) {
+afPickle_ObjEncoder.prototype.isMapType = function(obj) {
 	if (obj == null) return false;
 	let sig = obj.signature();
 	return sig.startsWith("[") && sig.endsWith("]");
