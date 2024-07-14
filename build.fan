@@ -16,7 +16,7 @@ class Build : BuildPod {
 		depends = [
 			// ---- Fantom Core -----------------
 			"sys        1.0.70 - 1.0",
-			
+		
 			// ---- Test ------------------------
 			"concurrent 1.0.70 - 1.0",
 		]
@@ -26,6 +26,7 @@ class Build : BuildPod {
 		jsDirs		= [`js/`]
 		javaDirs	= [`java/fan/afPickle/`]
 	
-		meta["afBuild.testPods"]	= "concurrent"
+//		meta["f4.jsReflectClosures"]	= "true"
+		meta["afBuild.testPods"]		= "concurrent"
 	}
 }

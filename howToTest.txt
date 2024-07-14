@@ -1,6 +1,9 @@
 
+Java:
+fpm test -t afPickle afPickle
+
+JS:
+fpm run -t afPickle compilerJs::NodeRunner -keep -test afPickle
 
 ES:
 fpm run -t afPickle nodeJs::Main test -keep afPickle
-
-
