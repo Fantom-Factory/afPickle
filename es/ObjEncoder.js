@@ -196,7 +196,7 @@ fanx_ObjEncoder.prototype.writeList = function(list)
 
   // figure out if we can use an inferred type
   var inferred = false;
-  if (this.curFieldType != null && (this.curFieldType instanceof sys.ListType))
+  if (this.curFieldType != null && (this.isListType(this.curFieldType)))
   {
     inferred = true;
   }
@@ -240,7 +240,7 @@ fanx_ObjEncoder.prototype.writeMap = function(map)
 
   // figure out if we can use an inferred type
   var inferred = false;
-  if (this.curFieldType != null && (this.curFieldType instanceof MapType))
+  if (this.curFieldType != null && (this.isMapType(this.curFieldType)))
   {
     inferred = true;
   }
@@ -355,3 +355,23 @@ fanx_fudgeInstaceOf(obj) {
   return arr;
 }
 */
+
+
+
+// ====
+// Some Sweet SlimerDude Fudge
+// ====
+// sys.ListType and sys.MapType are NOT exported, so here are some workarounds
+
+// an alternative to 'obj instanceof ListType'
+fanx_ObjEncoder.prototype.isListType = function(obj) {
+	if (obj == null) return false;
+	return obj.signature().endsWith("[]");
+}
+
+// an alternative to 'obj instanceof MapType'
+fanx_ObjEncoder.prototype.isMapType = function(obj) {
+	if (obj == null) return false;
+	let sig = obj.signature();
+	return sig.startsWith("[") && sig.endsWith("]");
+}

@@ -460,7 +460,7 @@ fanx_Tokenizer.prototype.uri = function()
     }
   }
 
-  this.val = Uri.fromStr(s);
+  this.val = sys.Uri.fromStr(s);
   return fanx_Token.URI_LITERAL;
 }
 
@@ -597,3 +597,16 @@ for (var i=48/*'0'*/; i<=57/*'9'*/; ++i) fanx_Tokenizer.charMap[i] = fanx_Tokeni
 function fanx_Undo(t, v, l) { this.type = t; this.val = v; this.line = l; }
 fanx_Undo.prototype.reset = function(t) { t.reset(this.type, this.val, this.line); }
 
+
+
+// ====
+// Some Sweet SlimerDude Fudge
+// ====
+// sys.ListType and sys.MapType are NOT exported, so here are some workarounds
+
+// an alternative to 'new MapType()'
+fanx_Tokenizer.prototype.newMapType = function(k, v) {
+	return sys.Map.type$.parameterize(
+		new Map().set("K", k).set("V", v)
+	);
+}

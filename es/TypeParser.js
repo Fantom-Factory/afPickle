@@ -106,7 +106,7 @@ fanx_TypeParser.prototype.loadMap = function()
   this.consume(':');
   var val = this.load();
   this.consume(']');
-  return new MapType(key, val);
+  return this.newMapType(key, val);
 }
 
 fanx_TypeParser.prototype.loadFunc = function()
@@ -262,3 +262,17 @@ fanx_TypeParser.find = function(podName, typeName, checked)
 }
 
 fanx_TypeParser.cache = [];
+
+
+
+// ====
+// Some Sweet SlimerDude Fudge
+// ====
+// sys.ListType and sys.MapType are NOT exported, so here are some workarounds
+
+// an alternative to 'new MapType()'
+fanx_TypeParser.prototype.newMapType = function(k, v) {
+	return sys.Map.type$.parameterize(
+		new Map().set("K", k).set("V", v)
+	);
+}

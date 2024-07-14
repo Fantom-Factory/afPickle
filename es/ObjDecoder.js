@@ -369,7 +369,7 @@ fanx_ObjDecoder.prototype.readCollection = function(curField, t)
     peekType = this.readType();
 
     // if we have [mapType] then this is non-inferred type signature
-    if (this.curt == fanx_Token.RBRACKET && peekType instanceof MapType)
+    if (this.curt == fanx_Token.RBRACKET && this.isMapType(peekType))
     {
       t = peekType; peekType = null;
       this.consume();
@@ -471,7 +471,7 @@ fanx_ObjDecoder.prototype.readMap = function(mapType, firstKey)
     var size = map.size();
     var k = sys.Type.common$(map.keys().__values());
     var v = sys.Type.common$(map.vals().__values());
-    map.__type(new sys.MapType(k, v));
+    map.__type(this.newMapType(k, v));
   }
 
   return map;
@@ -490,7 +490,7 @@ fanx_ObjDecoder.prototype.toListOfType = function(t, curField, infer)
   if (curField != null)
   {
     var ft = curField.type().toNonNullable();
-    if (ft instanceof sys.ListType) return ft.v;
+    if (this.isListType(ft)) return ft.v;
   }
   if (infer) return null;
   return sys.Obj.type$.toNullable();
@@ -505,20 +505,20 @@ fanx_ObjDecoder.prototype.toListOfType = function(t, curField, infer)
  */
 fanx_ObjDecoder.prototype.toMapType = function(t, curField, infer)
 {
-  if (t instanceof MapType)
+  if (this.isMapType(t))
     return t;
 
   if (curField != null)
   {
     var ft = curField.type().toNonNullable();
-    if (ft instanceof MapType) return ft;
+    if (this.isMapType(ft)) return ft;
   }
 
   if (infer) return null;
 
   if (fanx_ObjDecoder.defaultMapType == null)
     fanx_ObjDecoder.defaultMapType =
-      new MapType(sys.Obj.type$, sys.Obj.type$.toNullable());
+      this.newMapType(sys.Obj.type$, sys.Obj.type$.toNullable());
   return fanx_ObjDecoder.defaultMapType;
 }
 
@@ -549,7 +549,7 @@ fanx_ObjDecoder.prototype.readType = function(lbracket)
     this.consume();
     var lbracket2 = this.curt == fanx_Token.LBRACKET;
     if (lbracket2) this.consume();
-    t = new MapType(t, this.readType(lbracket2));
+    t = this.newMapType(t, this.readType(lbracket2));
     if (lbracket2) this.consume(fanx_Token.RBRACKET, "Expected closeing ']'");
   }
   while (this.curt == fanx_Token.LRBRACKET)
@@ -711,3 +711,29 @@ fanx_UsingType.prototype.resolve = function(n)
   return this.name == n ? this.type : null;
 }
 
+
+
+// ====
+// Some Sweet SlimerDude Fudge
+// ====
+// sys.ListType and sys.MapType are NOT exported, so here are some workarounds
+
+// an alternative to 'obj instanceof ListType'
+fanx_ObjDecoder.prototype.isListType = function(obj) {
+	if (obj == null) return false;
+	return obj.signature().endsWith("[]");
+}
+
+// an alternative to 'obj instanceof MapType'
+fanx_ObjDecoder.prototype.isMapType = function(obj) {
+	if (obj == null) return false;
+	let sig = obj.signature();
+	return sig.startsWith("[") && sig.endsWith("]");
+}
+
+// an alternative to 'new MapType()'
+fanx_ObjDecoder.prototype.newMapType = function(k, v) {
+	return sys.Map.type$.parameterize(
+		new Map().set("K", k).set("V", v)
+	);
+}
