@@ -459,7 +459,7 @@ class Tokenizer {
 	 * Return a IOErr for current location in source.
 	 */
 	err(msg) {
-		return afPickle_ObjDecoder.err(msg, this.line);
+		return ObjDecoder.err(msg, this.line);
 	}
 
 	////////////////////////////////////////////////////////////////

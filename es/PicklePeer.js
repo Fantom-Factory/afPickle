@@ -5,7 +5,7 @@ class PicklePeer extends sys.Obj {
 
 	static readObjFromIn(input, options) {
 		if (options === undefined) options = null;
-		return new afPickle_ObjDecoder(input, options).readObj();
+		return new ObjDecoder(input, options).readObj();
 	}
 
 	static writeObjToOut(output, obj, options) {
