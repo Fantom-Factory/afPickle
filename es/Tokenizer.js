@@ -45,7 +45,7 @@ afPickle_Tokenizer.prototype.doNext = function() {
 	while (true) {
 		// skip whitespace
 		while (this.curt == afPickle_Tokenizer.SPACE) this.consume();
-		if (this.cur < 0) return afPickle_Token.EOF;
+		if (this.cur < 0) return Token.EOF;
 
 		// alpha means identifier
 		if (this.curt == afPickle_Tokenizer.ALPHA) return this.id();
@@ -60,30 +60,30 @@ afPickle_Tokenizer.prototype.doNext = function() {
 			case /* '"' */  34: return this.str();
 			case /* '\''*/  39: return this.ch();
 			case /* '`' */  96: return this.uri();
-			case /* '(' */  40: this.consume(); return afPickle_Token.LPAREN;
-			case /* ')' */  41: this.consume(); return afPickle_Token.RPAREN;
-			case /* ',' */  44: this.consume(); return afPickle_Token.COMMA;
-			case /* ';' */  59: this.consume(); return afPickle_Token.SEMICOLON;
-			case /* '=' */  61: this.consume(); return afPickle_Token.EQ;
-			case /* '{' */ 123: this.consume(); return afPickle_Token.LBRACE;
-			case /* '}' */ 125: this.consume(); return afPickle_Token.RBRACE;
-			case /* '#' */  35: this.consume(); return afPickle_Token.POUND;
-			case /* '?' */  63: this.consume(); return afPickle_Token.QUESTION;
+			case /* '(' */  40: this.consume(); return Token.LPAREN;
+			case /* ')' */  41: this.consume(); return Token.RPAREN;
+			case /* ',' */  44: this.consume(); return Token.COMMA;
+			case /* ';' */  59: this.consume(); return Token.SEMICOLON;
+			case /* '=' */  61: this.consume(); return Token.EQ;
+			case /* '{' */ 123: this.consume(); return Token.LBRACE;
+			case /* '}' */ 125: this.consume(); return Token.RBRACE;
+			case /* '#' */  35: this.consume(); return Token.POUND;
+			case /* '?' */  63: this.consume(); return Token.QUESTION;
 			case /* '.' */  46:
 				if (this.peekt == afPickle_Tokenizer.DIGIT) return this.number(false);
 				this.consume();
-				return afPickle_Token.DOT;
+				return Token.DOT;
 			case /* '[' */ 91:
 				this.consume();
-				if (this.cur == 93 /*']'*/) { this.consume(); return afPickle_Token.LRBRACKET; }
-				return afPickle_Token.LBRACKET;
+				if (this.cur == 93 /*']'*/) { this.consume(); return Token.LRBRACKET; }
+				return Token.LBRACKET;
 			case /* ']' */ 93:
 				this.consume();
-				return afPickle_Token.RBRACKET;
+				return Token.RBRACKET;
 			case /* ':' */ 58:
 				this.consume();
-				if (this.cur == 58 /*':'*/) { this.consume(); return afPickle_Token.DOUBLE_COLON; }
-				return afPickle_Token.COLON;
+				if (this.cur == 58 /*':'*/) { this.consume(); return Token.DOUBLE_COLON; }
+				return Token.COLON;
 			case /* '*' */ 42:
 				if (this.peek == 42 /*'*'*/) { this.skipCommentSL(); continue; }
 				break;
@@ -116,24 +116,24 @@ afPickle_Tokenizer.prototype.id = function() {
 	// TODO - whould this be faster to just compare the string directly?
 	switch (first) {
 		case /*'a'*/ 97:
-			if (val == "as") { return afPickle_Token.AS; }
+			if (val == "as") { return Token.AS; }
 			break;
 		case /*'f'*/ 102:
-			if (val == "false") { this.val = false; return afPickle_Token.BOOL_LITERAL; }
+			if (val == "false") { this.val = false; return Token.BOOL_LITERAL; }
 			break;
 		case /*'n'*/ 110:
-			if (val == "null") { this.val = null; return afPickle_Token.NULL_LITERAL; }
+			if (val == "null") { this.val = null; return Token.NULL_LITERAL; }
 			break;
 		case /*'t'*/ 116:
-			if (val == "true") { this.val = true; return afPickle_Token.BOOL_LITERAL; }
+			if (val == "true") { this.val = true; return Token.BOOL_LITERAL; }
 			break;
 		case /*'u'*/ 117:
-			if (val == "using") { return afPickle_Token.USING; }
+			if (val == "using") { return Token.USING; }
 			break;
 	}
 
 	this.val = val;
-	return afPickle_Token.ID;
+	return Token.ID;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -141,7 +141,7 @@ afPickle_Tokenizer.prototype.id = function() {
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * Parse a number literal afPickle_Token.
+ * Parse a number literal Token.
  */
 afPickle_Tokenizer.prototype.number = function(neg) {
 	// check for hex value
@@ -224,7 +224,7 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 				this.val = sys.Float.make(whole);
 			else
 				this.val = sys.Float.fromStr(s);
-			return afPickle_Token.FLOAT_LITERAL;
+			return Token.FLOAT_LITERAL;
 		}
 
 		// decimal literal (or duration)
@@ -232,11 +232,11 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 			var num = (s == null) ? whole : sys.Float.fromStr(s);
 			if (dur > 0) {
 				this.val = sys.Duration.make(num * dur);
-				return afPickle_Token.DURATION_LITERAL;
+				return Token.DURATION_LITERAL;
 			}
 			else {
 				this.val = sys.Decimal.make(num);
-				return afPickle_Token.DECIMAL_LITERAL;
+				return Token.DECIMAL_LITERAL;
 			}
 		}
 
@@ -244,11 +244,11 @@ afPickle_Tokenizer.prototype.number = function(neg) {
 		var num = (s == null) ? whole : Math.floor(Float.fromStr(s, true));
 		if (dur > 0) {
 			this.val = sys.Duration.make(num*dur);
-			return afPickle_Token.DURATION_LITERAL;
+			return Token.DURATION_LITERAL;
 		}
 		else {
 			this.val = num;
-			return afPickle_Token.INT_LITERAL;
+			return Token.INT_LITERAL;
 		}
 	}
 	catch (e) {
@@ -264,7 +264,7 @@ afPickle_Tokenizer.prototype.hex = function() {
 	this.consume(); // x
 
 	// read first hex
-	var type = afPickle_Token.INT_LITERAL;
+	var type = Token.INT_LITERAL;
 	var val = this.$hex(this.cur);
 	if (val < 0) throw this.err("Expecting hex number");
 var str = String.fromCharCode(this.cur);
@@ -299,7 +299,7 @@ afPickle_Tokenizer.prototype.$hex = function(c) {
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * Parse a string literal afPickle_Token.
+ * Parse a string literal Token.
  */
 afPickle_Tokenizer.prototype.str = function() {
 	this.consume();  // opening quote
@@ -316,7 +316,7 @@ afPickle_Tokenizer.prototype.str = function() {
 		}
 	}
 	this.val = s;
-	return afPickle_Token.STR_LITERAL;
+	return Token.STR_LITERAL;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -345,7 +345,7 @@ afPickle_Tokenizer.prototype.ch = function() {
 	this.consume();
 
 	this.val = c;
-	return afPickle_Token.INT_LITERAL;
+	return Token.INT_LITERAL;
 }
 
 /**
@@ -389,7 +389,7 @@ afPickle_Tokenizer.prototype.escape = function() {
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * Parse a uri literal afPickle_Token.
+ * Parse a uri literal Token.
  */
 afPickle_Tokenizer.prototype.uri = function() {
 	// consume opening tick
@@ -412,7 +412,7 @@ afPickle_Tokenizer.prototype.uri = function() {
 	}
 
 	this.val = sys.Uri.fromStr(s);
-	return afPickle_Token.URI_LITERAL;
+	return Token.URI_LITERAL;
 }
 
 //////////////////////////////////////////////////////////////////////////
