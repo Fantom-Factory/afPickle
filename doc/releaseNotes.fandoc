@@ -2,6 +2,9 @@
 v1.0 [#v1.0]
 ****
 
+v1.0.6 [#v1.0.6]
+ - New: Now supports the new [Fantom ES6 JavaScript execution environment]`https://fantom.org/forum/topic/2894`.
+
 v1.0.4 [#v1.0.4]
 ======
  - New: Allow a string of *space separated values* for the 'using' option.
