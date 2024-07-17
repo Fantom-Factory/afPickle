@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afPickle"
 		summary = "Pickles Fantom objects to and from strings"
-		version = Version("1.0.6")
+		version = Version("1.0.7")
 
 		meta = [
 			"pod.dis"		: "Pickle",
