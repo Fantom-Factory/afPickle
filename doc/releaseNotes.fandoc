@@ -2,7 +2,12 @@
 v1.0 [#v1.0]
 ****
 
+v1.0.8 [#v1.0.8]
+======
+ - Chg: No code change, just recompiled against Fantom 1.0.81.
+
 v1.0.6 [#v1.0.6]
+======
  - New: Now supports the new [Fantom ES6 JavaScript execution environment]`https://fantom.org/forum/topic/2894`.
 
 v1.0.4 [#v1.0.4]
@@ -21,4 +26,3 @@ v1.0.0 [#v1.0.0]
 v0.0.4 [#v0.0.4]
 ======
  - New: First public release - base code liberated from core Fantom serialisation framework.
-

@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afPickle"
 		summary = "Pickles Fantom objects to and from strings"
-		version = Version("1.0.7")
+		version = Version("1.0.8")
 
 		meta = [
 			"pod.dis"		: "Pickle",
@@ -15,10 +15,10 @@ class Build : BuildPod {
 
 		depends = [
 			// ---- Fantom Core -----------------
-			"sys        1.0.70 - 1.0",
+			"sys        1.0.81 - 1.0",
 		
 			// ---- Test ------------------------
-			"concurrent 1.0.70 - 1.0",
+			"concurrent 1.0.81 - 1.0",
 		]
 
 		srcDirs		= [`fan/`, `test/`]
